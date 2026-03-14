@@ -218,10 +218,6 @@ function UpdateSettingCard() {
       await relaunch();
     } else {
       setIsNewest(true);
-
-      setTimeout(() => {
-        setIsNewest(false);
-      }, 3000);
     }
   }
 
@@ -241,20 +237,28 @@ function UpdateSettingCard() {
     <div className="flex flex-col gap-0">
       <SettingsExpandar
         className={cn(isNewest && "rounded-b-none")}
-        title="Beta 0.1.6"
-        subtitle="上次更新：2026-03-14"
+        title="Beta 0.1.8"
+        // subtitle="上次更新：2026-03-14"
         icon={<CheckmarkStarburst24Regular />}
         trailing={
           <div className="flex justify-end">
             <Button
               className={cn(
                 "bg-card text-foreground border-border hover:bg-foreground/2",
-                checking && "cursor-not-allowed bg-muted",
+                checking && "bg-muted",
               )}
               onClick={handleCheck}
+              disabled={checking}
             >
-              <div className="flex gap-2">
-                {checking && <Spinner />}
+              <div className="flex gap-2 transition-[width] duration-300 ease-in-out">
+                <Spinner
+                  className={cn(
+                    "transition-all duration-300 -mx-2.5",
+                    checking
+                      ? "opacity-100 scale-100 mx-0"
+                      : "opacity-0 scale-75",
+                  )}
+                />
                 <span>{checking ? "检查中..." : "检查更新"}</span>
               </div>
             </Button>
