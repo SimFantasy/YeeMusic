@@ -53,7 +53,6 @@ export function PlaylistAddForm({
 
   return (
     <YeeDialog
-      variant="light"
       title="新建歌单"
       asForm
       showTitle={false}

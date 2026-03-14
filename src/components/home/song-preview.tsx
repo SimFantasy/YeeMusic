@@ -1,4 +1,3 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { getSongDetail } from "@/lib/services/song";
 import { likeSong } from "@/lib/services/user";
 import { usePlayerStore } from "@/lib/store/playerStore";
@@ -19,7 +18,7 @@ import { useContextMenuStore } from "@/lib/store/contextMenuStore";
 
 export function SongPreview({ resources }: { resources: Resource[] }) {
   return (
-    <div className="flex flex-col gap-6 basis-[calc((100%_-_1rem)/2)]">
+    <div className="flex flex-col gap-6 basis-[calc((100%-1rem)/2)]">
       {resources.map((res) => (
         <SongPreviewItem resource={res} key={res.resourceId} />
       ))}

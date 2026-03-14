@@ -4,7 +4,7 @@ import {
   CaretRight24Filled,
   ChevronRight24Regular,
 } from "@fluentui/react-icons";
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { YeeButton } from "../yee-button";
 
 interface SectionProps {

@@ -100,7 +100,7 @@ export function Titlebar() {
         </div>
       </div>
 
-      <div className="flex flex-1 justify-center shrink-0 min-w-[200px]">
+      <div className="flex flex-1 justify-center shrink-0 min-w-50">
         <div onMouseDown={(e) => e.stopPropagation()}>
           <SearchInput />
         </div>

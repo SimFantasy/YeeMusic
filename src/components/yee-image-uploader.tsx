@@ -102,7 +102,6 @@ function YeeCropperDialog({
 
   return (
     <YeeDialog
-      variant={theme === "dark" ? "dark" : "light"}
       title="裁剪图片"
       asForm={false}
       open={!!image}
@@ -128,7 +127,7 @@ function YeeCropperDialog({
       }
     >
       <div className="flex flex-col gap-8 p-4">
-        <div className="relative w-full h-[400px] bg-card/5 rounded-xl overflow-hidden">
+        <div className="relative w-full h-100 bg-card/5 rounded-xl overflow-hidden">
           {image && (
             <Cropper
               image={image}

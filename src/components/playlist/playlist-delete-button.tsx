@@ -51,7 +51,6 @@ export function PlaylistDeleteButton({ playlist }: { playlist: Playlist }) {
 
   return (
     <YeeDialog
-      variant={theme === "dark" ? "dark" : "light"}
       title="删除歌单"
       asForm={false}
       showTitle

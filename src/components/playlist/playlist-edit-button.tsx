@@ -79,7 +79,6 @@ export function PlaylistEditButton({
 
   return (
     <YeeDialog
-      variant={theme === "dark" ? "dark" : "light"}
       title="编辑歌单"
       open={open}
       onOpenChange={(val) => {

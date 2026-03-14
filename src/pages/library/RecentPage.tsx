@@ -41,7 +41,7 @@ function RecentPageContent() {
     <div className="w-full min-h-full px-8 pb-8 flex flex-col relative">
       <div
         className={cn(
-          "flex justify-between items-center shrink-0 sticky top-0 z-10 py-6",
+          "flex gap-8 items-center shrink-0 sticky top-0 z-10 py-6",
         )}
       >
         <Tabs
