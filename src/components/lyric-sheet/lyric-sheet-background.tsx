@@ -31,12 +31,14 @@ export function LyricSheetBackground() {
       });
 
       const gradientColors = colors
-        .filter((c) => c.lightness > 0.18 && c.lightness < 0.82)
-        .filter((c) => c.saturation > 0.18)
+        .filter((c) => c.lightness > 0.1 && c.lightness < 0.9)
+        .filter((c) => c.saturation > 0.1)
         .sort((a, b) => b.area - a.area)
         .map((c) => c.hex);
 
-      setGradientColors(gradientColors);
+      setGradientColors(
+        gradientColors.length > 0 ? gradientColors : colors.map((c) => c.hex),
+      );
     }
 
     getColors();
