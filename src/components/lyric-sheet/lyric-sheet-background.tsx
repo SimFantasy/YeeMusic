@@ -1,8 +1,8 @@
 import { usePlayerStore } from "@/lib/store/playerStore";
 import { useSettingStore } from "@/lib/store/settingStore";
 import { MeshGradient } from "@paper-design/shaders-react";
-import { Vibrant } from "node-vibrant/browser";
 import { useEffect, useState } from "react";
+import { extractColors } from "extract-colors";
 
 export function LyricSheetBackground() {
   const isPlaying = usePlayerStore((s) => s.isPlaying);
@@ -18,28 +18,28 @@ export function LyricSheetBackground() {
   ]);
 
   useEffect(() => {
-    if (!coverUrl) return;
+    async function getColors() {
+      if (!coverUrl) return;
 
-    const v = new Vibrant(coverUrl);
-    v.getPalette()
-      .then((palette) => {
-        const muted = palette.Muted?.hex;
-        const lightMuted = palette.LightMuted?.hex;
-        const darkMuted = palette.DarkMuted?.hex;
-        const lightVibrant = palette.LightVibrant?.hex;
-        const darkVibrant = palette.DarkVibrant?.hex;
-        const vibrant = palette.Vibrant?.hex;
+      const colors = await extractColors(coverUrl, {
+        pixels: 64000,
+        distance: 0.22,
+        colorValidator: (_r, _g, _b, alpha) => alpha > 250,
+        saturationDistance: 0.2,
+        lightnessDistance: 0.2,
+        hueDistance: 0.0833,
+      });
 
-        setGradientColors([
-          muted || "",
-          lightMuted || "",
-          darkMuted || "",
-          lightVibrant || "",
-          darkVibrant || "",
-          vibrant || "",
-        ]);
-      })
-      .catch((e: unknown) => console.log(e));
+      const gradientColors = colors
+        .filter((c) => c.lightness > 0.18 && c.lightness < 0.82)
+        .filter((c) => c.saturation > 0.18)
+        .sort((a, b) => b.area - a.area)
+        .map((c) => c.hex);
+
+      setGradientColors(gradientColors);
+    }
+
+    getColors();
   }, [coverUrl]);
 
   return (
