@@ -216,7 +216,7 @@ export function GlobalContextMenu() {
       {type === "song" && (
         <>
           <ContextMenuButton
-            icon={<Album24Regular className="size-4" />}
+            icon={<Person24Regular className="size-4" />}
             content={`歌手：${(data as Song).ar?.[0]?.name}`}
             onClick={() => {
               navigate(`/detail/artist?id=${(data as Song).ar?.[0]?.id}`);
@@ -225,7 +225,7 @@ export function GlobalContextMenu() {
           />
 
           <ContextMenuButton
-            icon={<Person24Regular className="size-4" />}
+            icon={<Album24Regular className="size-4" />}
             content={`专辑：${(data as Song).al?.name}`}
             onClick={() => {
               navigate(`/detail/album?id=${(data as Song).al?.id}`);

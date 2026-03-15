@@ -58,18 +58,25 @@ export interface SearchParams {
   type?: 1 | 10 | 100 | 1000 | 1002 | 1004 | 1006 | 1009 | 1014 | 1018 | 2000;
 }
 
-export async function getSearchResult({
-  keywords,
-  limit = 30,
-  offset = 0,
-  type = 1,
-}: SearchParams) {
-  const res = await api.get<SearchResponse>("/cloudsearch", {
-    keywords,
-    limit: limit?.toString(),
-    offset: offset?.toString(),
-    type: type?.toString(),
-  });
+export async function getSearchResult(
+  { keywords, limit = 30, offset = 0, type = 1 }: SearchParams,
+  options?: { signal?: AbortSignal },
+) {
+  const res = await api.get<SearchResponse>(
+    "/cloudsearch",
+    {
+      keywords,
+      limit: limit?.toString(),
+      offset: offset?.toString(),
+      type: type?.toString(),
+    },
+    {
+      signal: options?.signal,
+    },
+  );
+
+  console.log("type=100 res:", res);
+  console.log("offset:", offset);
 
   return res.result;
 }

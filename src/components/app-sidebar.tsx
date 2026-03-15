@@ -50,7 +50,6 @@ import { useState } from "react";
 import { LoginForm } from "./modal/login-form";
 import { useUserStore } from "@/lib/store/userStore";
 import { LogoutForm } from "./modal/logout-form";
-// import { usePathname, useSearchParams } from "next/navigation";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { Playlist } from "@/lib/types";
 import { PlaylistAddForm } from "./modal/playlist-add-form";
@@ -225,6 +224,7 @@ export function AppSidebar() {
                     <SidebarMenuSub>
                       <SidebarMenuItem>
                         <SidebarMenuButton
+                          className="cursor-pointer"
                           onClick={() => setIsPlaylistAddOpen(true)}
                         >
                           <div className="flex items-center gap-2">
@@ -295,7 +295,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton>
+                  <SidebarMenuButton className="cursor-pointer">
                     <Avatar className="size-6 -ml-0.5">
                       <AvatarImage src={user?.avatarUrl} alt="1sen" />
                       <AvatarFallback>
@@ -303,7 +303,6 @@ export function AppSidebar() {
                       </AvatarFallback>
                     </Avatar>
                     <span className="ml-1">{user?.nickname || "未登录"}</span>
-                    <ChevronUp className="ml-auto" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="top" className="h-auto ">

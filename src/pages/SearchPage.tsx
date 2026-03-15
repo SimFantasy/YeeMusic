@@ -1,5 +1,4 @@
 import { SongList } from "@/components/song/song-list";
-
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getSearchResult, type SearchParams } from "@/lib/services/search";
 import { useSearchParams } from "react-router-dom";
@@ -18,121 +17,182 @@ interface SearchData {
   playlists: Playlist[];
 }
 
+type SearchResult = {
+  songs?: Song[];
+  songCount?: number;
+  albums?: Album[];
+  albumCount?: number;
+  artists?: Artist[];
+  artistCount?: number;
+  playlists?: Playlist[];
+  playlistCount?: number;
+};
+
+const LIMIT = 30;
+
+const EMPTY_DATA: SearchData = {
+  songs: [],
+  albums: [],
+  artists: [],
+  playlists: [],
+};
+
 function SearchContent() {
-  const [serchParams] = useSearchParams();
-  const query = serchParams.get("q");
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("q") ?? "";
+
   const [tabValue, setTabValue] = useState("1");
-  const [data, setData] = useState<SearchData>({
-    songs: [],
-    albums: [],
-    artists: [],
-    playlists: [],
-  });
+  const [data, setData] = useState<SearchData>(EMPTY_DATA);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
-  const loadingRef = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const LIMIT = 30;
+  const type = Number(tabValue) as SearchParams["type"];
 
+  const currentLength =
+    {
+      "1": data.songs.length,
+      "10": data.albums.length,
+      "100": data.artists.length,
+      "1000": data.playlists.length,
+    }[tabValue] ?? 0;
+
+  // query / tab 变化时，先重置
   useEffect(() => {
-    async function fetchData() {
-      if (!query || loadingRef.current) return;
-      loadingRef.current = true;
-      setLoading(true);
-      try {
-        const type = Number(tabValue) as SearchParams["type"];
-        const res = await getSearchResult({
-          keywords: query,
-          type,
-          limit: LIMIT,
-          offset,
-        });
-
-        // 根据 type 更新对应的数据
-        switch (type) {
-          case 1:
-            if (res.songs)
-              setData((prev) => ({
-                ...prev,
-                songs:
-                  offset === 0 ? res.songs! : [...prev.songs, ...res.songs!],
-              }));
-            setHasMore(res.songs!.length >= LIMIT);
-            break;
-          case 10:
-            if (res.albums)
-              setData((prev) => ({
-                ...prev,
-                albums:
-                  offset === 0 ? res.albums! : [...prev.albums, ...res.albums!],
-              }));
-            setHasMore(res.albums!.length >= LIMIT);
-            break;
-          case 100:
-            if (res.artists)
-              setData((prev) => ({
-                ...prev,
-                artists:
-                  offset === 0
-                    ? res.artists!
-                    : [...prev.artists, ...res.artists!],
-              }));
-            setHasMore(res.artists!.length >= LIMIT);
-            break;
-          case 1000:
-            if (res.playlists)
-              setData((prev) => ({
-                ...prev,
-                playlists:
-                  offset === 0
-                    ? res.playlists!
-                    : [...prev.playlists, ...res.playlists!],
-              }));
-            setHasMore(res.playlists!.length >= LIMIT);
-            break;
-        }
-      } catch (err) {
-        console.log(err);
-      } finally {
-        loadingRef.current = false;
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [query, tabValue, offset]);
-
-  useEffect(() => {
+    setData(EMPTY_DATA);
     setOffset(0);
     setHasMore(true);
-    setData({ songs: [], albums: [], artists: [], playlists: [] });
+    abortRef.current?.abort();
   }, [query, tabValue]);
 
   useEffect(() => {
+    if (!query) {
+      setData(EMPTY_DATA);
+      setHasMore(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    abortRef.current?.abort();
+    abortRef.current = controller;
+
+    async function fetchData() {
+      setLoading(true);
+
+      try {
+        const res: SearchResult = await getSearchResult(
+          {
+            keywords: query,
+            type,
+            limit: LIMIT,
+            offset,
+          },
+          { signal: controller.signal },
+        );
+
+        switch (type) {
+          case 1: {
+            const songs = res.songs ?? [];
+            const total = res.songCount ?? 0;
+
+            setData((prev) => ({
+              ...prev,
+              songs: offset === 0 ? songs : [...prev.songs, ...songs],
+            }));
+
+            setHasMore(offset + songs.length < total);
+            break;
+          }
+
+          case 10: {
+            const albums = res.albums ?? [];
+            const total = res.albumCount ?? 0;
+
+            setData((prev) => ({
+              ...prev,
+              albums: offset === 0 ? albums : [...prev.albums, ...albums],
+            }));
+
+            setHasMore(offset + albums.length < total);
+            break;
+          }
+
+          case 100: {
+            const artists = res.artists ?? [];
+            const total = res.artistCount ?? 0;
+
+            setData((prev) => ({
+              ...prev,
+              artists: offset === 0 ? artists : [...prev.artists, ...artists],
+            }));
+
+            setHasMore(offset + artists.length < total);
+            break;
+          }
+
+          case 1000: {
+            const playlists = res.playlists ?? [];
+            const total = res.playlistCount ?? 0;
+
+            setData((prev) => ({
+              ...prev,
+              playlists:
+                offset === 0 ? playlists : [...prev.playlists, ...playlists],
+            }));
+
+            setHasMore(offset + playlists.length < total);
+            break;
+          }
+
+          default:
+            setHasMore(false);
+        }
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
+        console.error(err);
+        setHasMore(false);
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void fetchData();
+
+    return () => {
+      controller.abort();
+    };
+  }, [query, type, offset]);
+
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
+        const first = entries[0];
+        if (first?.isIntersecting && hasMore && !loading) {
           setOffset((prev) => prev + LIMIT);
         }
       },
       { threshold: 0.1 },
     );
 
-    const el = loadMoreRef.current;
-    if (el) observer.observe(el);
+    observer.observe(el);
 
     return () => {
-      if (el) observer.unobserve(el);
+      observer.disconnect();
     };
   }, [hasMore, loading]);
 
   const renderContent = () => {
     switch (tabValue) {
       case "1":
-        return <SongList songList={data.songs} />;
+        return <SongList songList={data.songs} showAlbum={true} />;
       case "10":
         return <AlbumList albumList={data.albums} />;
       case "100":
@@ -145,27 +205,19 @@ function SearchContent() {
   };
 
   return (
-    <div className="w-full min-h-full p-8 flex flex-col relative gap-2">
+    <div className="relative flex min-h-full w-full flex-col gap-2 p-8">
       <div
         className={cn(
-          "text-4xl font-bold relative mt-4 mb-2",
-          "before:content-['“'] before:text-muted-foreground/60 before:text-5xl",
-          "after:content-['”'] after:text-muted-foreground/60 after:text-5xl",
+          "relative mt-4 mb-2 text-4xl font-bold",
+          "before:text-5xl before:text-muted-foreground/60 before:content-['“']",
+          "after:text-5xl after:text-muted-foreground/60 after:content-['”']",
         )}
       >
         {query}
       </div>
 
-      <div
-        className={cn(
-          "flex justify-between items-center shrink-0 sticky top-0 z-30 py-6",
-        )}
-      >
-        <Tabs
-          defaultValue={tabValue.toString()}
-          value={tabValue}
-          onValueChange={(v) => setTabValue(v)}
-        >
+      <div className="sticky top-0 z-30 flex shrink-0 items-center justify-between py-6">
+        <Tabs value={tabValue} onValueChange={setTabValue}>
           <TabsList>
             <TabsTrigger value="1">单曲</TabsTrigger>
             <TabsTrigger value="1000">歌单</TabsTrigger>
@@ -175,11 +227,11 @@ function SearchContent() {
         </Tabs>
       </div>
 
-      <div className="flex-1 w-full h-full">{renderContent()}</div>
+      <div className="h-full w-full flex-1">{renderContent()}</div>
 
-      <div ref={loadMoreRef} className="py-4 flex justify-center">
+      <div ref={loadMoreRef} className="flex justify-center mt-8">
         {loading && <Loading />}
-        {!hasMore && data.songs.length > 0 && (
+        {!loading && !hasMore && currentLength > 0 && (
           <span className="text-black/60">没有更多了</span>
         )}
       </div>

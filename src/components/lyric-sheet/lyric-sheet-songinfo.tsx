@@ -147,7 +147,7 @@ function SongMeta({
       <div className="flex gap-2">
         <YeeButton
           variant="ghost"
-          icon={<SFIcon icon={lyricIcon} className="size-5" />}
+          icon={<SFIcon icon={lyricIcon} className="size-5 drop-shadow-md" />}
           onClick={() => {
             onLyricOpenChangeAction(!isLyricOpen);
             onPlaylistOpenChangeAction(false);
@@ -156,7 +156,7 @@ function SongMeta({
         />
         <YeeButton
           variant="ghost"
-          icon={<PlaylistIcon className="size-5" />}
+          icon={<PlaylistIcon className="size-5 drop-shadow-md" />}
           onClick={() => {
             onPlaylistOpenChangeAction(!isPlaylistOpen);
             onLyricOpenChangeAction(false);
@@ -165,13 +165,13 @@ function SongMeta({
         />
         <YeeButton
           variant="ghost"
-          icon={<LikeIcon className="size-5" />}
+          icon={<LikeIcon className="size-5 drop-shadow-md" />}
           onClick={handleLike}
           className="size-8 hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
         />
         <YeeButton
           variant="ghost"
-          icon={<MoreHorizontal24Filled className="size-5" />}
+          icon={<MoreHorizontal24Filled className="size-5 drop-shadow-md" />}
           className="size-8 hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
           onClick={(e) => {
             e.preventDefault();
@@ -263,7 +263,7 @@ function PlaybackControls() {
       ) : (
         <YeeButton
           variant="ghost"
-          icon={<PlayIcon className="size-12 drop-shadow-2xl text-white" />}
+          icon={<PlayIcon className="size-12 drop-shadow-md text-white" />}
           onClick={() => togglePlay()}
           className="size-16 cursor-pointer hover:bg-white/10 rounded-full transition-all duration-300 ease-in-out"
         />
@@ -271,7 +271,7 @@ function PlaybackControls() {
 
       <YeeButton
         variant="ghost"
-        icon={<Next24Filled className="size-8 drop-shadow-2xl" />}
+        icon={<Next24Filled className="size-8 drop-shadow-md" />}
         onClick={next}
         className="size-12 cursor-pointer hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
       />

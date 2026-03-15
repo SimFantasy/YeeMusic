@@ -44,7 +44,12 @@ export function LyricSheetTitlebar({
       <div></div>
       <div
         className="w-full flex justify-center py-4 cursor-pointer group"
-        onClick={() => setIsOpen(false)}
+        onClick={() => {
+          if (isFullscreen) {
+            toggleFullscreen();
+          }
+          setIsOpen(false);
+        }}
         onMouseDown={(e) => e.stopPropagation()}
       >
         <svg
