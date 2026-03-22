@@ -18,6 +18,7 @@ import { getPlaylistAllTrack } from "@/lib/services/playlist";
 import { getAlbum } from "@/lib/services/album";
 import { getArtistAllSongs } from "@/lib/services/artist";
 import { REPEAT_MODE_CONFIG } from "@/lib/constants/player";
+import { useUserStore } from "../userStore";
 
 let currentPlayAbortController: AbortController | null = null;
 
@@ -60,9 +61,10 @@ export const createPlayerControlSlice: StateCreator<
 
       // 先检查歌曲是否可用
       let url;
-      const musicAvailable = (await checkMusic(song.id, signal)).success;
+      const canPlay =
+        song.privilege && song.privilege.st >= 0 && song.privilege.pl > 0;
 
-      if (!musicAvailable) {
+      if (!canPlay) {
         // 尝试解锁灰色歌曲
         url = (await unblockMusic(song.id, signal)).data;
         set({ currentMusicLevel: "unlock" });

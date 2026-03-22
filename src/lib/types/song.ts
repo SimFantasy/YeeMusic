@@ -24,6 +24,7 @@ export interface QualityWithKey extends Quality {
 }
 
 export interface Privilege {
+  pl: number; // 能播放的最高码率
   cs: boolean; // 是否为云盘歌曲
   st: number; // 小于 0 时为灰色歌曲, 使用上传云盘的方法解灰后 st == 0
   toast: boolean; // 是否「由于版权保护，您所在的地区暂时无法使用」
