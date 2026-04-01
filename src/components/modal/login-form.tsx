@@ -24,7 +24,6 @@ import {
 import { cn } from "@/lib/utils";
 import { Checkmark24Filled } from "@fluentui/react-icons";
 import { useSettingStore } from "@/lib/store/settingStore";
-import { Button } from "../ui/button";
 
 export function LoginForm({
   open,

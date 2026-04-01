@@ -19,7 +19,6 @@ import {
   CheckmarkCircle24Filled,
   CheckmarkStarburst24Regular,
   Color24Regular,
-  Info24Filled,
   Info24Regular,
   Speaker224Regular,
   TextFont24Regular,
