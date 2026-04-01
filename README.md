@@ -5,7 +5,7 @@
 </div>
 
 <div align="center">
-  <p>基于 Tauri 的网易云音乐客户端</p>
+  <p>简洁美观的第三方网易云音乐客户端</p>
   <p><strong>优雅、灵动</strong></p>
 </div>
 
