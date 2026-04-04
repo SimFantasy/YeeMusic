@@ -91,10 +91,13 @@ function RecommendCard() {
       }}
     >
       <div className="absolute inset-0 z-0 flex items-center justify-center">
-        <img
-          src={coverUrl}
-          className="w-full h-full object-cover brightness-60"
-        />
+        {coverUrl && (
+          <img
+            src={coverUrl}
+            className="w-full h-full object-cover brightness-60"
+            alt="Recommend cover"
+          />
+        )}
       </div>
 
       <div className="relative z-10 w-full h-full p-6 flex flex-col justify-between">

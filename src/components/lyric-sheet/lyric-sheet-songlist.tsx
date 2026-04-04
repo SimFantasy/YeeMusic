@@ -19,10 +19,9 @@ export function LyricSheetSonglist({
   const { handleScroll, maskImage } = useScrollOverflowMask();
 
   const initialIndex = useMemo(() => {
-    const nowIndex = currentSong
-      ? playlist.findIndex((s) => s.id === currentSong.id)
-      : 0;
-    if (nowIndex !== 0) return nowIndex - 1;
+    if (!currentSong || playlist.length === 0) return 0;
+    const nowIndex = playlist.findIndex((s) => s.id === currentSong.id);
+    return Math.max(0, nowIndex - 1);
   }, [currentSong, playlist]);
 
   return (
@@ -51,7 +50,7 @@ export function LyricSheetSonglist({
               <div className="px-4 py-4">
                 <PlaylistSongPreview
                   song={song}
-                  isPlaying={song.id === currentSong!.id}
+                  isPlaying={currentSong ? song.id === currentSong.id : false}
                   isLike={likeListSet.has(Number(song.id))}
                   setOpen={setOpen}
                   titleStyle="text-white/80 font-semibold mix-blend-plus-lighter"

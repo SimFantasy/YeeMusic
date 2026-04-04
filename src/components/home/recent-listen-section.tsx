@@ -18,42 +18,45 @@ export function RecentListenSection({
 
     const loadItems = async () => {
       const processedItems = await Promise.all(
-        resources.map(async (res) => {
-          const cover = GetThumbnail(res.coverUrlList?.[0]);
-          const typeLink =
-            res.resourceType === "list" ? "playlist" : res.resourceType;
-          let coverColor = "black",
-            coverColor2 = "black";
-          const url = `/detail/${typeLink}?id=${res.resourceId}`;
+        resources
+          .filter((r) => r.resourceType !== "userfm")
+          .map(async (res) => {
+            const cover = GetThumbnail(res.coverUrlList?.[0]);
+            const typeLink =
+              res.resourceType === "list" ? "playlist" : res.resourceType;
+            let coverColor = "black",
+              coverColor2 = "black";
+            const url = `/detail/${typeLink}?id=${res.resourceId}`;
 
-          if (cover) {
-            try {
-              const v = new Vibrant(cover);
-              const palette = await v.getPalette();
-              coverColor = palette.LightVibrant?.hex || "black";
-              coverColor2 = palette.DarkMuted?.hex || "black";
-            } catch (error) {
-              console.error("Failed to extract color", error);
+            if (cover) {
+              try {
+                const v = new Vibrant(cover);
+                const palette = await v.getPalette();
+                coverColor = palette.LightVibrant?.hex || "black";
+                coverColor2 = palette.DarkMuted?.hex || "black";
+              } catch (error) {
+                console.error("Failed to extract color", error);
+              }
             }
-          }
 
-          return {
-            image: cover,
-            title: res.title,
-            subtitle: res.tag,
-            handle: res.playOrUpdateTime,
-            borderColor: coverColor,
-            gradient: `linear-gradient(180deg, ${coverColor}, ${coverColor2})`,
-            url: url,
-            onClick: (e: React.MouseEvent) => {
-              e.stopPropagation();
-              if (res?.resourceId) playList(res?.resourceId, res.resourceType);
-            },
+            return {
+              image: cover,
+              title: res.title,
+              subtitle: res.tag,
+              handle: res.playOrUpdateTime,
+              borderColor: coverColor,
+              gradient: `linear-gradient(180deg, ${coverColor}, ${coverColor2})`,
+              url: url,
+              onClick: (e: React.MouseEvent) => {
+                e.stopPropagation();
+                if (res?.resourceId)
+                  playList(res?.resourceId, res.resourceType);
+              },
 
-            resourceType: res.resourceType,
-            id: res.resourceId,
-          };
-        }),
+              resourceType: res.resourceType,
+              id: res.resourceId,
+            };
+          }),
       );
 
       if (isMounted) {

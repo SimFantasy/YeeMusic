@@ -47,7 +47,7 @@ export interface PlayerControlSlice {
   playQueue: (songs: Song[]) => void;
   playList: (
     listId: string | number,
-    listType: "list" | "album" | "voicelist",
+    listType: "list" | "album" | "voicelist" | "userfm",
   ) => void;
   playArtist: (artistId: string) => void;
   togglePlay: () => void;

@@ -80,7 +80,7 @@ export interface HomeBlock {
 // 最近常听
 export interface RecentListenResource {
   resourceId: number;
-  resourceType: "list" | "album" | "voicelist"; // 歌单、专辑、播客
+  resourceType: "list" | "album" | "voicelist" | "userfm"; // 歌单、专辑、播客
   title: string;
   tag: string;
   coverUrlList: string[];

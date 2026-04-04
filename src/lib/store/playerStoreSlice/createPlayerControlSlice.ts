@@ -1,7 +1,6 @@
 import { StateCreator } from "zustand";
 import { PlayerControlSlice, SharedPlayerState } from "@/lib/types/player";
 import {
-  getSongDetail,
   getSongLyric,
   getSongMusicDetail,
   getSongUrl,
@@ -126,7 +125,7 @@ export const createPlayerControlSlice: StateCreator<
           },
         );
         corePlayer.setVolume(get().volume);
-        
+
         set({
           isLoadingMusic: false,
           currentSongMusicDetail: musicDetail,
