@@ -29,6 +29,8 @@
   <img src="./docs/images/4.png" width="48%">
   <img src="./docs/images/5.png" width="48%">
   <img src="./docs/images/6.png" width="48%">
+  <img src="./docs/images/7.png" width="48%">
+  <img src="./docs/images/8.png" width="48%">
 </div>
     
 ## ✨ 功能与特性
@@ -65,7 +67,7 @@
 
 ### 2. 安装运行
 
-``` bash
+```bash
 # 1. 克隆项目
 git clone https://github.com/1sen3/YeeMusic.git
 cd yee-music
@@ -87,7 +89,7 @@ pnpm tbuild
 1. 部署好 API 服务后，获取你的服务地址。
 2. 在项目根目录下的 src/lib/utils/api.ts 中，修改 BASE_URL 变量：
 
-``` ts
+```ts
 // src/lib/utils/api.ts
 const BASE_URL = "你的 API 地址";
 ```
