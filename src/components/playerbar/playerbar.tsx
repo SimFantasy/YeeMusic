@@ -11,7 +11,6 @@ import {
 import { usePlayerStore } from "@/lib/store/playerStore";
 import { GetThumbnail, cn } from "@/lib/utils";
 
-import { REPEAT_MODE_CONFIG, SHUFFLE_CONFIG } from "@/lib/constants/player";
 import { Spinner } from "@/components/ui/spinner";
 import { PlaylistSheet } from "./playlist-sheet";
 import { MusicLevelPopover } from "../music-level-popover";
@@ -29,6 +28,10 @@ import { PlayerBarVolumePopover } from "./player-bar-volume-popover";
 import { PlayerBarSlider } from "./playerbar-slider";
 import { useContextMenuStore } from "@/lib/store/contextMenuStore";
 import { useSongLogic } from "@/hooks/use-song-logic";
+import {
+  REPEAT_MODE_BY_TYPE,
+  SHUFFLE_MODE_BY_TYPE,
+} from "@/lib/constants/player";
 
 export function PlayerBar() {
   return (
@@ -118,16 +121,18 @@ function CenterButtonRegion() {
 
   const isLoadingMusic = usePlayerStore((s) => s.isLoadingMusic);
   const isPlaying = usePlayerStore((s) => s.isPlaying);
-  const repeatMode = usePlayerStore((s) => s.repeatMode);
-  const isShuffle = usePlayerStore((s) => s.isShuffle);
+  const repeatType = usePlayerStore((s) => s.repeatMode);
+  const shuffleType = usePlayerStore((s) => s.isShuffle);
   const isFmMode = usePlayerStore((s) => s.isFmMode);
   const fmRepeatMode = usePlayerStore((s) => s.fmRepeatMode);
   const trashFmSong = usePlayerStore((s) => s.trashFmSong);
   const toggleFmRepeatMode = usePlayerStore((s) => s.toggleFmRepeatMode);
 
   const PlayIcon = isPlaying ? Pause24Filled : Play24Filled;
-  const repeatModeConfig = REPEAT_MODE_CONFIG[repeatMode];
-  const shuffleConfig = SHUFFLE_CONFIG[isShuffle ? "on" : "off"];
+  const repeatModeConfig =
+    REPEAT_MODE_BY_TYPE[repeatType] || REPEAT_MODE_BY_TYPE["order"];
+  const shuffleConfig =
+    SHUFFLE_MODE_BY_TYPE[shuffleType] || SHUFFLE_MODE_BY_TYPE["off"];
 
   const canShuffle = repeatModeConfig.canShuffle;
 
@@ -149,7 +154,7 @@ function CenterButtonRegion() {
       ) : (
         <YeeButton
           variant="ghost"
-          onClick={prev}
+          onClick={() => prev(true)}
           icon={<Previous24Filled className="size-5" />}
         />
       )}
@@ -168,7 +173,7 @@ function CenterButtonRegion() {
 
       <YeeButton
         variant="ghost"
-        onClick={next}
+        onClick={() => next(true)}
         icon={<Next24Filled className="size-5" />}
       />
 

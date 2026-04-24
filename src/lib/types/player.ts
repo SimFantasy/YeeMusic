@@ -1,4 +1,4 @@
-import { repeatModeKey } from "../constants/player";
+import { RepeatType, ShuffleType } from "../constants/player";
 import { QualityKey } from "../constants/song";
 import { Song, SongLyric, SongQualityDetail } from "./song";
 
@@ -12,8 +12,8 @@ export interface PlayerState {
   isLoadingMusic: boolean;
   preferMusicLevel: QualityKey;
   currentMusicLevel: QualityKey;
-  repeatMode: "order" | "repeat" | "single"; // 顺序、循环、单曲循环
-  isShuffle: boolean; // 是否随机
+  repeatMode: RepeatType;
+  isShuffle: ShuffleType;
   volume: number;
   progress: number; // 0 ~ 100
   duration: number; // 当前歌曲总时长 s
@@ -36,8 +36,8 @@ export interface PlaylistSlice {
 export interface PlayerControlSlice {
   isPlaying: boolean;
   isLoadingMusic: boolean;
-  repeatMode: repeatModeKey;
-  isShuffle: boolean;
+  repeatMode: RepeatType;
+  isShuffle: ShuffleType;
   volume: number;
   progress: number;
   duration: number;
@@ -51,8 +51,8 @@ export interface PlayerControlSlice {
   ) => void;
   playArtist: (artistId: string) => void;
   togglePlay: () => void;
-  next: () => void;
-  prev: () => void;
+  next: (isManual?: boolean) => void;
+  prev: (isManual?: boolean) => void;
   updateProgress: () => void;
   updateVolume: (volume: number) => void;
   seek: (percentage: number) => void;

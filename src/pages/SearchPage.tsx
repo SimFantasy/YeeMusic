@@ -10,6 +10,7 @@ import { ArtistList } from "@/components/artist/artist-list";
 import { cn } from "@/lib/utils";
 import { PlaylistList } from "@/components/playlist/playlist-list";
 import { BlurLayer } from "@/components/blur-layer";
+import { SearchSkeleton } from "@/components/skeleton/search-skeleton";
 
 interface SearchData {
   songs: Song[];
@@ -232,10 +233,16 @@ function SearchContent() {
         <BlurLayer />
       </div>
 
-      <div className="h-full w-full flex-1 px-8">{renderContent()}</div>
+      <div className="h-full w-full flex-1 px-8">
+        {loading && offset === 0 ? (
+          <SearchSkeleton tabValue={tabValue} />
+        ) : (
+          renderContent()
+        )}
+      </div>
 
       <div ref={loadMoreRef} className="flex justify-center mt-8">
-        {loading && <Loading />}
+        {loading && offset > 0 && <Loading />}
         {!loading && !hasMore && currentLength > 0 && (
           <span className="text-black/60">没有更多了</span>
         )}

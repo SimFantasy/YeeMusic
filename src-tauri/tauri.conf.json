@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Yee Music",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "identifier": "com.isen.yee-music",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -21,8 +21,23 @@
         "transparent": true,
         "windowEffects": {
           "effects": ["acrylic", "mica"]
+        }
+      },
+      {
+        "title": "TrayMenu",
+        "url": "/tray-menu",
+        "width": 200,
+        "height": 240,
+        "visible": false,
+        "resizable": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "decorations": false,
+        "transparent": true,
+        "windowEffects": {
+          "effects": ["acrylic"]
         },
-        "additionalBrowserArgs": "--disk-cache-size=104857600 --js-flags='--max-old-space-size=2048'"
+        "label": "tray-menu"
       }
     ],
     "security": {

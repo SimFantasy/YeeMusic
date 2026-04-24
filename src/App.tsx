@@ -11,10 +11,12 @@ import SettingPage from "./pages/SettingPage";
 import ProfilePage from "./pages/ProfilePage";
 import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { initMediaSession } from "./lib/store/mediaSessionSync";
 import DownloadPage from "./pages/library/DownloadPage";
 import LocalPage from "./pages/library/LocalPage";
 import { DailyRecommendPage } from "./pages/recommend/DailyRecommendPage";
+import TrayMenu from "./pages/TrayMenu";
 
 const router = createBrowserRouter([
   {
@@ -71,6 +73,10 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/tray-menu",
+    element: <TrayMenu />,
+  },
 ]);
 
 export default function App() {
@@ -79,7 +85,7 @@ export default function App() {
   let mediaSessionInitialized = false;
 
   useEffect(() => {
-    if (!mediaSessionInitialized) {
+    if (!mediaSessionInitialized && getCurrentWindow().label === "main") {
       initMediaSession();
       mediaSessionInitialized = true;
     }
@@ -100,7 +106,9 @@ export default function App() {
     };
   }, []);
 
-  if (isBackground) return <div style={{ display: "none" }}></div>;
+  if (isBackground && getCurrentWindow().label === "main") {
+    return <div style={{ display: "none" }}></div>;
+  }
 
   return <RouterProvider router={router} />;
 }

@@ -16,10 +16,10 @@ import { corePlayer } from "@/lib/player/corePlayer";
 import { getPlaylistAllTrack } from "@/lib/services/playlist";
 import { getAlbum } from "@/lib/services/album";
 import { getArtistAllSongs } from "@/lib/services/artist";
-import { REPEAT_MODE_CONFIG } from "@/lib/constants/player";
 import { Song } from "@/lib/types";
 import { fmTrash, getPersonalFm } from "@/lib/services/recommend";
 import { useSettingStore } from "../settingStore";
+import { REPEAT_MODE_BY_TYPE } from "@/lib/constants/player";
 
 let currentPlayAbortController: AbortController | null = null;
 
@@ -32,7 +32,7 @@ export const createPlayerControlSlice: StateCreator<
   isPlaying: false,
   isLoadingMusic: false,
   repeatMode: "order",
-  isShuffle: false,
+  isShuffle: "off",
   volume: 0.7,
   progress: 0,
   duration: 0,
@@ -231,7 +231,7 @@ export const createPlayerControlSlice: StateCreator<
     set({ isPlaying: !isPlaying });
   },
 
-  next: () => {
+  next: (isManual = false) => {
     if (get().isFmMode) {
       get().nextFmSong();
       return;
@@ -248,7 +248,7 @@ export const createPlayerControlSlice: StateCreator<
     if (!currentSong || playlist.length === 0) return;
 
     // 单曲循环
-    if (repeatMode === "single") {
+    if (repeatMode === "single" && !isManual) {
       corePlayer.seek(0);
       corePlayer.resume();
       set({ isPlaying: true });
@@ -281,7 +281,7 @@ export const createPlayerControlSlice: StateCreator<
     get().playSong(playlist[nextIdx]);
   },
 
-  prev: () => {
+  prev: (isManual = false) => {
     if (get().isFmMode) {
       get().seek(0);
       return;
@@ -297,7 +297,7 @@ export const createPlayerControlSlice: StateCreator<
     if (!currentSong || playlist.length === 0) return;
 
     // 单曲循环
-    if (repeatMode === "single") {
+    if (repeatMode === "single" && !isManual) {
       corePlayer.seek(0);
       corePlayer.resume();
       set({ isPlaying: true });
@@ -347,17 +347,17 @@ export const createPlayerControlSlice: StateCreator<
   toggleRepeatMode: () => {
     const { repeatMode, isShuffle } = get();
 
-    const repeatModeConfig = REPEAT_MODE_CONFIG[repeatMode];
+    const repeatModeConfig = REPEAT_MODE_BY_TYPE[repeatMode];
     const nextRepetMode = repeatModeConfig.next;
-    if (!REPEAT_MODE_CONFIG[nextRepetMode].canShuffle && isShuffle) {
-      set({ isShuffle: false });
+    if (!REPEAT_MODE_BY_TYPE[nextRepetMode].canShuffle && isShuffle === "on") {
+      set({ isShuffle: "off" });
     }
     set({ repeatMode: nextRepetMode });
   },
 
   toggleShuffleMode: () => {
     const { isShuffle } = get();
-    set({ isShuffle: !isShuffle });
+    set({ isShuffle: isShuffle === "on" ? "off" : "on" });
   },
 
   isFmMode: false,

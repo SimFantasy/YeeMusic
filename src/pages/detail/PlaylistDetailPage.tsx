@@ -1,6 +1,5 @@
 import { useSearchParams } from "react-router-dom";
 import { PlaylistPage } from "@/components/playlist/detail/playlist-page";
-import { DetailPageSkeleton } from "@/components/detail-page-skeleton";
 import {
   getPlaylistAllTrack,
   getPlaylistDetail,
@@ -9,6 +8,7 @@ import { Playlist, Song } from "@/lib/types";
 import { useEffect, useState, Suspense } from "react";
 import { useUserStore } from "@/lib/store/userStore";
 import { useSongLogic } from "@/hooks/use-song-logic";
+import { PlaylistSkeleton } from "@/components/skeleton/playlist-skeleton";
 
 function PlaylistContent() {
   const [searchParams] = useSearchParams();
@@ -78,25 +78,25 @@ function PlaylistContent() {
 
   if (!id) return <div className="p-8">未找到歌单 ID</div>;
 
+  if (isLoading || !playlist) {
+    return <PlaylistSkeleton />;
+  }
+
   return (
     <div className="w-full h-full py-8 flex flex-col gap-8">
-      <DetailPageSkeleton loading={isLoading} data={playlist}>
-        {(data) => (
-          <PlaylistPage
-            playlist={data}
-            songs={songs}
-            isMyPlaylist={data.creator.userId === user?.userId}
-            onRefresh={() => {}}
-          />
-        )}
-      </DetailPageSkeleton>
+      <PlaylistPage
+        playlist={playlist}
+        songs={songs}
+        isMyPlaylist={playlist.creator.userId === user?.userId}
+        onRefresh={() => {}}
+      />
     </div>
   );
 }
 
 export default function PlaylistDetailPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<PlaylistSkeleton />}>
       <PlaylistContent />
     </Suspense>
   );

@@ -6,36 +6,45 @@ import {
   ArrowShuffleOff20Regular,
 } from "@fluentui/react-icons";
 
-export const REPEAT_MODE_CONFIG = {
-  order: {
+export const REPEAT_MODE_LIST = [
+  {
+    type: "order",
     icon: ArrowRepeatAllOff20Regular,
-    desc: "顺序播放",
+    label: "顺序播放",
     next: "repeat",
     canShuffle: true,
   },
-  repeat: {
+  {
+    type: "repeat",
     icon: ArrowRepeatAll20Regular,
-    desc: "列表循环",
+    label: "列表循环",
     next: "single",
     canShuffle: true,
   },
-  single: {
+  {
+    type: "single",
     icon: ArrowRepeat120Regular,
-    desc: "单曲循环",
+    label: "单曲循环",
     next: "order",
     canShuffle: false,
   },
-} as const;
+] as const;
 
-export type repeatModeKey = keyof typeof REPEAT_MODE_CONFIG;
+export type RepeatType = (typeof REPEAT_MODE_LIST)[number]["type"];
+export type RepeatMode = (typeof REPEAT_MODE_LIST)[number];
 
-export const SHUFFLE_CONFIG = {
-  on: {
-    icon: ArrowShuffle20Regular,
-    desc: "随机",
-  },
-  off: {
-    icon: ArrowShuffleOff20Regular,
-    desc: "顺序",
-  },
-};
+export const REPEAT_MODE_BY_TYPE = Object.fromEntries(
+  REPEAT_MODE_LIST.map((q) => [q.type, q]),
+) as Record<RepeatType, RepeatMode>;
+
+export const SHUFFLE_MODE = [
+  { type: "on", icon: ArrowShuffle20Regular, label: "随机" },
+  { type: "off", icon: ArrowShuffleOff20Regular, label: "顺序" },
+] as const;
+
+export type ShuffleType = (typeof SHUFFLE_MODE)[number]["type"];
+export type ShuffleMode = (typeof SHUFFLE_MODE)[number];
+
+export const SHUFFLE_MODE_BY_TYPE = Object.fromEntries(
+  SHUFFLE_MODE.map((q) => [q.type, q]),
+) as Record<ShuffleType, ShuffleMode>;

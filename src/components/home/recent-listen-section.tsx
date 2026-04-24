@@ -204,7 +204,10 @@ export function RecentListenSection({
       <div
         ref={containerRef}
         className="w-full overflow-x-auto scroll-smooth [&::-webkit-scrollbar]:hidden"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
       >
         <ChromaGrid
           items={items}

@@ -36,15 +36,9 @@ pub fn run() {
                 let _ = window.show();
             }
 
-            let quit_i = MenuItem::with_id(app, "quit", "退出", true, None::<&str>)?;
-
-            let menu = Menu::with_items(app, &[&quit_i])?;
-
             let _tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
                 .tooltip("Yee Music")
-                .menu(&menu)
-                .show_menu_on_left_click(false)
                 .on_tray_icon_event(|tray, event| match event {
                     TrayIconEvent::Click {
                         button: MouseButton::Left,
@@ -58,11 +52,28 @@ pub fn run() {
                             let _ = window.emit("app-foreground", ());
                         }
                     }
-                    _ => {}
-                })
-                .on_menu_event(|app, event| match event.id.as_ref() {
-                    "quit" => {
-                        app.exit(0);
+                    TrayIconEvent::Click {
+                        button: MouseButton::Right,
+                        button_state: MouseButtonState::Up,
+                        position,
+                        ..
+                    } => {
+                        let app = tray.app_handle();
+                        if let Some(window) = app.get_webview_window("tray-menu") {
+                            let size = window.outer_size().unwrap();
+                            let adjusted_pos = tauri::PhysicalPosition {
+                                x: position.x - (size.width as f64 / 2.0),   // 居中于鼠标
+                                y: position.y - (size.height as f64) - 10.0, // 在鼠标上方显示（针对底部任务栏）
+                            };
+                            let _ = window.set_position(tauri::Position::Physical(
+                                tauri::PhysicalPosition {
+                                    x: adjusted_pos.x as i32,
+                                    y: adjusted_pos.y as i32,
+                                },
+                            ));
+                            window.show().unwrap();
+                            window.set_focus().unwrap();
+                        }
                     }
                     _ => {}
                 })
@@ -99,6 +110,11 @@ pub fn run() {
                         let _ = window.hide();
                     }
                 });
+            }
+            WindowEvent::Focused(focused) => {
+                if !focused && window.label() == "tray-menu" {
+                    let _ = window.hide();
+                }
             }
             _ => {}
         })

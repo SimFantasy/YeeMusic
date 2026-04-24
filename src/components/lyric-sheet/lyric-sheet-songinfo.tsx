@@ -12,7 +12,6 @@ import {
   Speaker024Filled,
   Speaker224Filled,
 } from "@fluentui/react-icons";
-import { REPEAT_MODE_CONFIG, SHUFFLE_CONFIG } from "@/lib/constants/player";
 import { Spinner } from "../ui/spinner";
 import { useUserStore } from "@/lib/store/userStore";
 import { likeSong } from "@/lib/services/user";
@@ -32,6 +31,10 @@ import { Link } from "react-router-dom";
 import { YeeButton } from "../yee-button";
 import { useContextMenuStore } from "@/lib/store/contextMenuStore";
 import { Marquee } from "../marquee/marquee";
+import {
+  REPEAT_MODE_BY_TYPE,
+  SHUFFLE_MODE_BY_TYPE,
+} from "@/lib/constants/player";
 
 export function LyricSheetSonginfo({
   setIsOpen,
@@ -241,13 +244,14 @@ function LyricSheetSonginfoDuration({
 
 function PlaybackControls() {
   const isPlaying = usePlayerStore((s) => s.isPlaying);
-  const repeatMode = usePlayerStore((s) => s.repeatMode);
-  const isShuffle = usePlayerStore((s) => s.isShuffle);
+  const repeatType = usePlayerStore((s) => s.repeatMode);
+  const shuffleType = usePlayerStore((s) => s.isShuffle);
   const isLoadingMusic = usePlayerStore((s) => s.isLoadingMusic);
   const PlayIcon = isPlaying ? Pause24Filled : Play24Filled;
-  const shuffleKey = isShuffle ? "on" : "off";
-  const repeatModeConfig = REPEAT_MODE_CONFIG[repeatMode];
-  const shuffleConfig = SHUFFLE_CONFIG[shuffleKey];
+  const repeatModeConfig =
+    REPEAT_MODE_BY_TYPE[repeatType] || REPEAT_MODE_BY_TYPE["order"];
+  const shuffleConfig =
+    SHUFFLE_MODE_BY_TYPE[shuffleType] || SHUFFLE_MODE_BY_TYPE["off"];
   const canShuffle = repeatModeConfig.canShuffle;
 
   const isFmMode = usePlayerStore((s) => s.isFmMode);
@@ -267,7 +271,7 @@ function PlaybackControls() {
         disabled={!canShuffle || isFmMode}
         className={cn(
           "size-8 cursor-pointer hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out",
-          !canShuffle && "text-white/50",
+          (!canShuffle || shuffleType === "off") && "text-white/50",
         )}
       />
 
@@ -284,7 +288,7 @@ function PlaybackControls() {
         <YeeButton
           variant="ghost"
           icon={<Previous24Filled className="size-8 drop-shadow-md" />}
-          onClick={prev}
+          onClick={() => prev(true)}
           className="size-12 hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
         />
       )}
@@ -305,7 +309,7 @@ function PlaybackControls() {
       <YeeButton
         variant="ghost"
         icon={<Next24Filled className="size-8 drop-shadow-md" />}
-        onClick={next}
+        onClick={() => next(true)}
         className="size-12 cursor-pointer hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
       />
 
@@ -330,7 +334,7 @@ function PlaybackControls() {
           onClick={toggleRepeatMode}
           className={cn(
             "size-8 cursor-pointer hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out",
-            repeatMode === "order" && "text-white/50",
+            repeatType === "order" && "text-white/50",
           )}
         />
       )}

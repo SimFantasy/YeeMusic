@@ -1,21 +1,32 @@
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import { emit, listen } from "@tauri-apps/api/event";
 import { usePlayerStore } from "./playerStore";
 
 export function initMediaSession() {
-  // 歌曲变化时 → 通知 Rust 更新 SMTC 元数据
+  // 歌曲变化时 → 通知 Rust 更新 SMTC 元数据，并同步给托盘菜单
   usePlayerStore.subscribe(
-    (state) => state.currentSong,
-    (currentSong) => {
+    (state) => ({ currentSong: state.currentSong, isPlaying: state.isPlaying }),
+    ({ currentSong, isPlaying }) => {
       if (!currentSong) return;
       // 先设置元数据（duration 会在 onPlay 后通过 playback 更新）
       invoke("smtc_update_metadata", {
         title: currentSong.name || "",
         artist: currentSong.ar?.map((a) => a.name).join("、") || "",
         album: currentSong.al?.name || "",
-        coverUrl: currentSong.al?.picUrl ? `${currentSong.al.picUrl}?param=512y512` : "",
+        coverUrl: currentSong.al?.picUrl
+          ? `${currentSong.al.picUrl}?param=512y512`
+          : "",
         durationSecs: 0,
       }).catch((e) => console.error("Update SMTC Info Failed:", e));
+
+      emit("sync-player-state", {
+        title: currentSong.name || "Yee Music",
+        artist: currentSong.ar?.map((a) => a.name).join("、") || "未播放",
+        coverUrl: currentSong.al?.picUrl
+          ? `${currentSong.al.picUrl}?param=128y128`
+          : "",
+        isPlaying,
+      }).catch(console.error);
     },
   );
 
@@ -32,6 +43,32 @@ export function initMediaSession() {
         positionSecs: time,
         durationSecs: duration,
       });
+
+      const store = usePlayerStore.getState();
+      const currentSong = store.currentSong;
+      if (currentSong) {
+        emit("sync-player-state", {
+          title: currentSong.name || "Yee Music",
+          artist: currentSong.ar?.map((a) => a.name).join("、") || "未播放",
+          coverUrl: currentSong.al?.picUrl
+            ? `${currentSong.al.picUrl}?param=128y128`
+            : "",
+          isPlaying,
+        }).catch(console.error);
+      }
+    },
+  );
+
+  usePlayerStore.subscribe(
+    (state) => ({
+      isShuffle: state.isShuffle,
+      repeatMode: state.repeatMode,
+    }),
+    ({ isShuffle, repeatMode }) => {
+      emit("sync-play-mode", {
+        isShuffle,
+        repeatMode,
+      }).catch(console.error);
     },
   );
 
@@ -60,6 +97,12 @@ export function initMediaSession() {
         if (position !== undefined && store.duration > 0) {
           store.seek((position / store.duration) * 100);
         }
+        break;
+      case "shuffle":
+        store.toggleShuffleMode();
+        break;
+      case "repeat":
+        store.toggleRepeatMode();
         break;
     }
   });
