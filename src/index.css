@@ -50,7 +50,6 @@
 
 ::-webkit-scrollbar {
     width: 6px;
-    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -58,8 +57,8 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background: transparent;
-    border-radius: 3px;
+    background: #00000020;
+    border-radius: 6px;
 }
 
 :hover::-webkit-scrollbar-thumb {
@@ -226,4 +225,9 @@
 ::selection {
     color: white;
     background: var(--primary);
+}
+
+:focus {
+    outline: none !important;
+    box-shadow: none !important;
 }

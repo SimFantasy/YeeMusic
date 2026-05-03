@@ -5,8 +5,6 @@ import {
   List24Filled,
   List24Regular,
   MoreHorizontal24Filled,
-  Speaker024Filled,
-  Speaker224Filled,
 } from "@fluentui/react-icons";
 import { Spinner } from "../ui/spinner";
 import { useUserStore } from "@/lib/store/userStore";
@@ -26,6 +24,8 @@ import {
   sfQuoteBubble,
   sfQuoteBubbleFill,
   sfRepeat1,
+  sfSpeakerFill,
+  sfSpeakerWave3Fill,
 } from "@bradleyhodges/sfsymbols";
 import { YeeButton } from "../yee-button";
 import { useContextMenuStore } from "@/lib/store/contextMenuStore";
@@ -83,7 +83,7 @@ function SongCover() {
             1000,
           )}
           alt={`${currentSong?.name} 封面`}
-          className="size-78 object-cover"
+          className="size-78 object-cover select-none"
         />
       </div>
     </div>
@@ -143,7 +143,7 @@ function SongMeta({
           textClassName="text-xl font-bold text-white/80 drop-shadow-md mix-blend-overlay line-clamp-1 select-none"
         />
         <div
-          className="hover:bg-white/10 px-2 -translate-x-2 rounded-md cursor-pointer transition-colors duration-300 w-fit max-w-full"
+          className="hover:bg-background/10 px-2 -translate-x-2 rounded-md cursor-pointer transition-colors duration-300 w-fit max-w-full"
           onClick={(e) => {
             openMenu(
               e.clientX + 10,
@@ -302,7 +302,7 @@ function PlaybackControls() {
             <SFIcon icon={sfBackwardFill} className="size-10 drop-shadow-md" />
           }
           onClick={() => prev(true)}
-          className="size-12 hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
+          className="size-16 hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
         />
       )}
 
@@ -330,7 +330,7 @@ function PlaybackControls() {
           <SFIcon icon={sfForwardFill} className="size-10 drop-shadow-md" />
         }
         onClick={() => next(true)}
-        className="size-12 cursor-pointer hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
+        className="size-16 cursor-pointer hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
       />
 
       {isFmMode ? (
@@ -376,8 +376,15 @@ function VolumeControl() {
   const updateVolume = usePlayerStore((s) => s.updateVolume);
 
   return (
-    <div className="w-full flex gap-2 justify-between items-center">
-      <Speaker024Filled className="size-5 text-white/40 mix-blend-plus-lighter" />
+    <div className="w-full flex gap-4 justify-between items-center">
+      <SFIcon
+        icon={sfSpeakerFill}
+        className="size-4 text-white/40 mix-blend-plus-lighter hover:text-white/60 hover:scale-110 transition-all duration-300 cursor-pointer"
+        onClick={() => {
+          if (volume <= 0) return;
+          updateVolume(volume - 0.1);
+        }}
+      />
 
       <div className="w-full h-3 flex items-center">
         <YeeSlider
@@ -392,7 +399,14 @@ function VolumeControl() {
         />
       </div>
 
-      <Speaker224Filled className="size-5 text-white/40 drop-shadow-md mix-blend-plus-lighter" />
+      <SFIcon
+        icon={sfSpeakerWave3Fill}
+        className="size-6 text-white/40 drop-shadow-md mix-blend-plus-lighter hover:text-white/60 hover:scale-110 transition-all duration-300 cursor-pointer"
+        onClick={() => {
+          if (volume >= 1) return;
+          updateVolume(volume + 0.1);
+        }}
+      />
     </div>
   );
 }

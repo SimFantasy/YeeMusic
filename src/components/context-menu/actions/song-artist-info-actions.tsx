@@ -4,6 +4,7 @@ import { ActionProps } from "./action";
 import { useNavigate } from "react-router-dom";
 import { useContextMenuStore } from "@/lib/store/contextMenuStore";
 import { Song } from "@/lib/types";
+import { useAppWindow } from "@/hooks/use-app-window";
 
 export function SongArtistInfoActions({ type, data }: ActionProps) {
   if (type !== "song-artist-info" && data.resourceType !== "song") return null;
@@ -15,6 +16,8 @@ export function SongArtistInfoActions({ type, data }: ActionProps) {
   const albumId = (data as Song).al.id;
   const artistStr = (data as Song).ar?.map((ar) => ar.name).join("、");
   const artistId = (data as Song).ar?.[0].id;
+
+  const { isFullscreen, toggleFullscreen } = useAppWindow();
 
   return (
     <>
@@ -29,6 +32,7 @@ export function SongArtistInfoActions({ type, data }: ActionProps) {
         }
         onClick={(e) => {
           e.stopPropagation();
+          if (isFullscreen) toggleFullscreen();
 
           closeMenu();
           navigate(`/detail/album?id=${albumId}`);
@@ -45,6 +49,7 @@ export function SongArtistInfoActions({ type, data }: ActionProps) {
         }
         onClick={(e) => {
           e.stopPropagation();
+          if (isFullscreen) toggleFullscreen();
 
           closeMenu();
           navigate(`/detail/artist?id=${artistId}`);

@@ -16,17 +16,12 @@ export const VerbatimWord = React.memo(function VerbatimWord({
   currentTimeMotion: MotionValue<number>;
 }) {
   const emphasisFactor = React.useMemo(() => {
-    const duration = word.duration;
-    const text = word.char.trim();
-    const isChinese = /[\u4e00-\u9fa5]/.test(text);
+    const { duration, char } = word;
+    const text = char.trim();
 
-    if (isChinese) {
-      return Math.min(Math.max(duration - 1000, 0) / 200, 1);
-    } else {
-      const isValidLength = text.length >= 1 && text.length <= 7;
-      if (!isValidLength) return 0;
-      return Math.min(Math.max(duration - 1000, 0) / 200, 1);
-    }
+    if (text.length === 0 || text.length > 7) return 0;
+
+    return Math.min(Math.max(duration - 1000, 0) / 200, 1);
   }, [word]);
 
   const rawProgress = useTransform(
@@ -65,7 +60,31 @@ export const VerbatimWord = React.memo(function VerbatimWord({
     `;
 
   const chars = useMemo(() => word.char.split(""), [word.char]);
-  const isWavy = !/[\u4e00-\u9fa5]/.test(word.char) && emphasisFactor > 0;
+  const isWavy = /\p{Script=Latin}/u.test(word.char) && emphasisFactor > 0;
+  const needsPerChar = emphasisFactor > 0;
+
+  if (!needsPerChar) {
+    return (
+      <motion.span
+        style={{
+          display: "inline-block",
+          whiteSpace: "pre",
+          fontWeight: "500",
+          mixBlendMode: "plus-lighter",
+          textShadow,
+          y: translateY,
+          willChange: "transform",
+          backgroundImage,
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          WebkitTextFillColor: "rgba(255,255,255,0.4)",
+          backgroundSize: "100% 100%",
+        }}
+      >
+        {word.char}
+      </motion.span>
+    );
+  }
 
   const totalChars = chars.length;
 
@@ -75,7 +94,7 @@ export const VerbatimWord = React.memo(function VerbatimWord({
         display: "inline-block",
         whiteSpace: "pre",
         fontWeight: "500",
-        textShadow: textShadow,
+        textShadow,
         mixBlendMode: "plus-lighter",
         y: translateY,
         willChange: "transform",
@@ -116,7 +135,7 @@ const WavyChar = React.memo(function WavyChar({
 }) {
   const charY = useTransform(progress, (p) => {
     if (!isWavy || p <= 0 || p >= 1) return 0;
-    const sine = Math.sin(p * Math.PI * 2 * 2 - idx * 0.4);
+    const sine = Math.sin(p * Math.PI * 2 - idx * 0.4);
     return sine * 2 * emphasisFactor * Math.sin(p * Math.PI);
   });
 
@@ -130,8 +149,8 @@ const WavyChar = React.memo(function WavyChar({
         backgroundClip: "text",
         WebkitTextFillColor: "rgba(255,255,255,0.4)",
         backgroundSize: `${totalChars * 100}% 100%`,
-        willChange: "transform",
         backgroundPosition: `${(idx / Math.max(totalChars - 1, 1)) * 100}% 0%`,
+        willChange: "transform",
       }}
     >
       {char}

@@ -39,7 +39,7 @@ export function LyricSheetTitlebar({
     <div
       className="w-screen h-16 grid grid-cols-[1fr_auto_1fr] items-center overflow-hidden px-4 absolute top-0 left-0 z-10000"
       onMouseDown={(e) => {
-        if (e.button !== 0) return;
+        if (e.button !== 0 || isFullscreen) return;
 
         const currentTime = new Date().getTime();
         const timeDiff = currentTime - lastClickTimeRef.current;
@@ -52,9 +52,8 @@ export function LyricSheetTitlebar({
         }
       }}
     >
-      <div></div>
       <div
-        className="w-full flex justify-center py-4 cursor-pointer group"
+        className="w-full flex justify-center py-4 cursor-pointer group col-end-3"
         onClick={() => {
           if (isFullscreen) {
             toggleFullscreen();
@@ -97,27 +96,37 @@ export function LyricSheetTitlebar({
           className="text-white size-8 hover:bg-white/10 hover:text-white rounded-lg"
           onMouseDown={(e) => e.stopPropagation()}
         />
-        <YeeButton
-          variant="ghost"
-          icon={<Subtract24Filled />}
-          className="text-white size-8 hover:bg-white/10 hover:text-white rounded-lg"
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={minimize}
-        />
-        <YeeButton
-          variant="ghost"
-          icon={<MaxmizeIcon />}
-          className="text-white size-8 hover:bg-white/10 hover:text-white rounded-lg"
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={toogleMaximize}
-        />
-        <YeeButton
-          variant="ghost"
-          icon={<Dismiss24Filled />}
-          className="text-white size-8 hover:bg-white/10 hover:text-white rounded-lg"
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={close}
-        />
+
+        <div
+          className={cn(
+            "flex items-center transition-all duration-300 ease-in-out",
+            isFullscreen
+              ? "max-w-0 opacity-0 translate-x-6 pointer-events-none"
+              : " opacity-100 translate-x-0 gap-2",
+          )}
+        >
+          <YeeButton
+            variant="ghost"
+            icon={<Subtract24Filled />}
+            className="text-white size-8 hover:bg-white/10 hover:text-white rounded-lg"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={minimize}
+          />
+          <YeeButton
+            variant="ghost"
+            icon={<MaxmizeIcon />}
+            className="text-white size-8 hover:bg-white/10 hover:text-white rounded-lg"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={toogleMaximize}
+          />
+          <YeeButton
+            variant="ghost"
+            icon={<Dismiss24Filled />}
+            className="text-white size-8 hover:bg-white/10 hover:text-white rounded-lg"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={close}
+          />
+        </div>
       </div>
     </div>
   );

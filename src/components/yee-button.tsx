@@ -11,14 +11,17 @@ interface PlayerBarButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElem
   className?: string;
 }
 
-const YeeButtonVariants = cva("cursor-pointer", {
-  variants: {
-    variant: {
-      outline: "rounded-full cursor-pointer border-0 drop-shadow-md bg-card!",
-      ghost: "hover:bg-foreground/5 rounded-sm",
+const YeeButtonVariants = cva(
+  "cursor-pointer focus-visible:outline-none! focus:ring-foreground/80!",
+  {
+    variants: {
+      variant: {
+        outline: "rounded-full cursor-pointer border-0 drop-shadow-md bg-card!",
+        ghost: "hover:bg-foreground/5 rounded-sm",
+      },
     },
   },
-});
+);
 
 export const YeeButton = React.forwardRef<
   HTMLButtonElement,
@@ -34,7 +37,11 @@ export const YeeButton = React.forwardRef<
         ref={ref}
         variant={variant}
         size="icon"
-        className={cn(YeeButtonVariants({ variant }), className)}
+        className={cn(
+          YeeButtonVariants({ variant }),
+          "focus:ring-0! focus:border-0!",
+          className,
+        )}
         disabled={disabled}
         {...props}
       >

@@ -45,6 +45,7 @@ export const createSongInfoSlice: StateCreator<
             set({ currentTime, progress });
           },
         );
+        corePlayer.setVolume(get().volume);
       }
     } catch (err) {
       console.log("切换音质失败", err);

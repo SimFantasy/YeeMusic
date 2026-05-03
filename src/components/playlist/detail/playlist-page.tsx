@@ -184,7 +184,7 @@ export function PlaylistPage({
         <BlurLayer />
       </div>
 
-      <div className="px-8">
+      <div className="px-8 relative">
         <PlaylistSongs songs={songs} query={searchQuery} sort={sortOption} />
       </div>
     </div>

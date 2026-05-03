@@ -24,6 +24,42 @@ function checkIsBgLine(text: string): { text: string; isBG: boolean } {
 }
 
 /**
+ * 将 duration 为 0 的字符合并到相邻的非零字上，
+ * 避免 useTransform 输入区间退化导致显示异常。
+ * 向后合并：零时长字 append 到前一个字；
+ * 行首的零时长字则 prepend 到后一个字。
+ */
+function mergeZeroDuration(words: LyricWord[]): LyricWord[] {
+  if (words.length === 0) return words;
+
+  const result: LyricWord[] = [];
+  let pending = "";
+
+  for (const w of words) {
+    if (w.duration === 0) {
+      if (result.length > 0) {
+        result[result.length - 1] = {
+          ...result[result.length - 1],
+          char: result[result.length - 1].char + w.char,
+        };
+      } else {
+        pending += w.char;
+      }
+    } else {
+      result.push({ ...w, char: pending + w.char });
+      pending = "";
+    }
+  }
+
+  if (pending && result.length > 0) {
+    const last = result[result.length - 1];
+    result[result.length - 1] = { ...last, char: last.char + pending };
+  }
+
+  return result;
+}
+
+/**
  * 解析普通 lrc 歌词
  * @param rawString lrc 歌词字符串
  * @returns 返回解析得到的 LyricLine
@@ -116,8 +152,9 @@ export function ParseVerbatimLyric(rawString: string | undefined) {
       }
 
       if (words.length > 0) {
+        const merged = mergeZeroDuration(words);
         const bg = checkIsBgLine(lineText);
-        const finalWords = bg.isBG ? words.slice(1, -1) : words;
+        const finalWords = bg.isBG ? merged.slice(1, -1) : merged;
         if (finalWords.length > 0) {
           lyrics.push({
             lineStart,

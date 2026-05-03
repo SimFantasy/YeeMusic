@@ -31,7 +31,7 @@ export function LyricSheetAudioLevelModel({
       title="音频质量"
       asForm={false}
       trigger={
-        <div className="border-0 bg-white/10 text-white/80 rounded-sm drop-shadow-md hover:bg-white/20 font-semibold px-2 py-1 text-xs cursor-pointer">
+        <div className="border-0 text-white/60 mix-blend-plus-lighter rounded-sm text-shadow-md hover:bg-background/50 font-semibold px-2 py-1 text-xs cursor-pointer transition-colors duration-300 ease-out">
           {QUALITY_BY_KEY[currentMusicLevelKey].desc}
         </div>
       }

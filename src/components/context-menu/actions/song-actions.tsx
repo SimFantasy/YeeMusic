@@ -20,6 +20,7 @@ import {
 import { Resource, Song } from "@/lib/types";
 import { QUALITY_LIST } from "@/lib/constants/song";
 import { useDownloadStore } from "@/lib/store/downloadStore";
+import { useAppWindow } from "@/hooks/use-app-window";
 
 export function SongActions({ type, data }: ActionProps) {
   const { closeMenu } = useContextMenuStore();
@@ -64,6 +65,8 @@ export function SongActions({ type, data }: ActionProps) {
     (data as Song).ar?.[0]?.name ||
     (data as Resource).resourceExtInfo.artists?.[0]?.name;
   const albumStr = (data as Song).al?.name;
+
+  const { isFullscreen, toggleFullscreen } = useAppWindow();
 
   return (
     <>
@@ -146,10 +149,14 @@ export function SongActions({ type, data }: ActionProps) {
         content={
           <div className="flex flex-col">
             <span>前往艺人</span>
-            <span className="line-clamp-1 text-foreground/50">{artistStr}</span>
+            <span className="text-xs line-clamp-1 text-foreground/50">
+              {artistStr}
+            </span>
           </div>
         }
         onClick={() => {
+          if (isFullscreen) toggleFullscreen();
+
           navigate(
             `/detail/artist?id=${(data as Song).ar?.[0]?.id}|| (data as Resource).resourceExtInfo.artists?.[0]?.id}`,
           );
@@ -164,12 +171,14 @@ export function SongActions({ type, data }: ActionProps) {
           content={
             <div className="flex flex-col">
               <span>前往专辑</span>
-              <span className="line-clamp-1 text-foreground/50">
+              <span className="text-xs line-clamp-1 text-foreground/50">
                 {albumStr}
               </span>
             </div>
           }
           onClick={() => {
+            if (isFullscreen) toggleFullscreen();
+
             navigate(`/detail/album?id=${(data as Song).al?.id}`);
             closeMenu();
           }}

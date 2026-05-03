@@ -1,12 +1,15 @@
-import {
-  Speaker116Regular,
-  Speaker216Regular,
-  SpeakerMute16Regular,
-} from "@fluentui/react-icons";
 import { YeeButton } from "../yee-button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Slider } from "../ui/slider";
 import { usePlayerStore } from "@/lib/store/playerStore";
+import {
+  sfSpeaker,
+  sfSpeakerWave1,
+  sfSpeakerWave2,
+  sfSpeakerWave3,
+} from "@bradleyhodges/sfsymbols";
+import SFIcon from "@bradleyhodges/sfsymbols-react";
+import { cn } from "@/lib/utils";
 
 export function PlayerBarVolumePopover() {
   const volume = usePlayerStore((s) => s.volume);
@@ -14,15 +17,30 @@ export function PlayerBarVolumePopover() {
 
   const VolumeButton =
     volume === 0
-      ? SpeakerMute16Regular
-      : volume < 0.5
-        ? Speaker116Regular
-        : Speaker216Regular;
+      ? sfSpeaker
+      : volume < 0.3
+        ? sfSpeakerWave1
+        : volume < 0.7
+          ? sfSpeakerWave2
+          : sfSpeakerWave3;
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <YeeButton variant="ghost" icon={<VolumeButton className="size-4" />} />
+        <YeeButton
+          variant="ghost"
+          icon={
+            <div className="flex items-center justify-center">
+              <SFIcon
+                icon={VolumeButton}
+                className={cn(
+                  volume < 0.3 && "size-3",
+                  volume >= 0.3 && "size-4",
+                )}
+              />
+            </div>
+          }
+        />
       </PopoverTrigger>
       <PopoverContent
         side="top"
@@ -30,7 +48,15 @@ export function PlayerBarVolumePopover() {
         className="w-56 rounded-lg mr-2 p-4 bg-card/80 backdrop-blur-md"
       >
         <div className="flex gap-2 items-center">
-          <VolumeButton className="size-4" />
+          <div className="flex items-center justify-center">
+            <SFIcon
+              icon={VolumeButton}
+              className={cn(
+                volume < 0.3 && "size-3",
+                volume >= 0.3 && "size-4",
+              )}
+            />
+          </div>
           <Slider
             value={[volume]}
             onValueChange={(value) => updateVolume(value[0])}
