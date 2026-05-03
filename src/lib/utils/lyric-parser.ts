@@ -8,8 +8,46 @@ export interface ILyricLine {
   lineStart: number;
   lineText: string;
   words?: LyricWord[]; // 逐字歌词用，逐行歌词为 undefined
-  showLeadDots: boolean;
-  isBG: boolean;
+  isBG?: boolean;
+  isLeadDots?: boolean;
+  leadDotsDuration?: number;
+}
+
+function insertLeadDots(lyrics: ILyricLine[]): ILyricLine[] {
+  if (lyrics.length === 0) return lyrics;
+
+  const MIN_GAP = 10000;
+  const FIRST_DOT_DELAY = 5000;
+
+  const result: ILyricLine[] = [];
+
+  // 前奏：第一行歌词之前如果间隔足够长，插入 dots
+  if (lyrics[0].lineStart >= MIN_GAP) {
+    result.push({
+      lineStart: FIRST_DOT_DELAY,
+      lineText: "···",
+      isLeadDots: true,
+      leadDotsDuration: lyrics[0].lineStart - FIRST_DOT_DELAY,
+    });
+  }
+
+  for (let i = 0; i < lyrics.length; i++) {
+    result.push(lyrics[i]);
+    if (i < lyrics.length - 1) {
+      const gap = lyrics[i + 1].lineStart - lyrics[i].lineStart;
+      if (gap >= MIN_GAP) {
+        const dotTime = lyrics[i].lineStart + FIRST_DOT_DELAY;
+        result.push({
+          lineStart: Math.round(dotTime),
+          lineText: "···",
+          isLeadDots: true,
+          leadDotsDuration:
+            lyrics[i + 1].lineStart - Math.round(dotTime),
+        });
+      }
+    }
+  }
+  return result;
 }
 
 function checkIsBgLine(text: string): { text: string; isBG: boolean } {
@@ -73,14 +111,6 @@ export function ParseLyric(rawString: string | undefined) {
 
   const lyrics: ILyricLine[] = [];
 
-  const checkLeadDots = (currentTime: number) => {
-    if (lyrics.length === 0) {
-      return currentTime >= 10000;
-    }
-    const prevTime = lyrics[lyrics.length - 1].lineStart;
-    return currentTime - prevTime >= 10000;
-  };
-
   lines.forEach((line) => {
     const trimmedLine = line.trim();
     if (!trimmedLine) return;
@@ -98,14 +128,13 @@ export function ParseLyric(rawString: string | undefined) {
         lyrics.push({
           lineStart: time,
           lineText: bg.text,
-          showLeadDots: checkLeadDots(time),
           isBG: bg.isBG,
         });
       }
     }
   });
 
-  return lyrics;
+  return insertLeadDots(lyrics);
 }
 
 /**
@@ -121,14 +150,6 @@ export function ParseVerbatimLyric(rawString: string | undefined) {
 
   const lineRegex = /^\[(\d+),(\d+)\]/;
   const wordRegex = /\((\d+),(\d+),\d+\)([^()]+)/g;
-
-  const checkLeadDots = (currentTime: number) => {
-    if (lyrics.length === 0) {
-      return currentTime >= 10000;
-    }
-    const prevTime = lyrics[lyrics.length - 1].lineStart;
-    return currentTime - prevTime >= 10000;
-  };
 
   lines.forEach((line) => {
     const trimmedLine = line.trim();
@@ -160,7 +181,6 @@ export function ParseVerbatimLyric(rawString: string | undefined) {
             lineStart,
             lineText: bg.text,
             words: finalWords,
-            showLeadDots: checkLeadDots(lineStart),
             isBG: bg.isBG,
           });
         }
@@ -168,5 +188,5 @@ export function ParseVerbatimLyric(rawString: string | undefined) {
     }
   });
 
-  return lyrics;
+  return insertLeadDots(lyrics);
 }

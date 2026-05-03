@@ -13,7 +13,7 @@ import {
   Play24Filled,
 } from "@fluentui/react-icons";
 import { Link } from "react-router-dom";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useUserStore } from "@/lib/store/userStore";
 import { subAlbum } from "@/lib/services/user";
@@ -27,6 +27,9 @@ function AlbumContent() {
   const [album, setAlbum] = useState<Album | null>(null);
   const [tabValue, setTabValue] = useState("song");
   const playList = usePlayerStore((s) => s.playList);
+  const [isPinned, setIsPinned] = useState(false);
+
+  const headerRef = useRef<HTMLDivElement>(null);
 
   const albumListSet = useUserStore((s) => s.albumListSet);
   const toggleLikeAlbum = useUserStore((s) => s.toggleLikeAlbum);
@@ -71,6 +74,26 @@ function AlbumContent() {
     }
   }
 
+  useEffect(() => {
+    const root = document.getElementById("main-scroll-container");
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsPinned(!entry.isIntersecting);
+      },
+      {
+        root,
+        rootMargin: "-10px 0px 0px 0px",
+        threshold: 0,
+      },
+    );
+
+    if (headerRef.current) {
+      observer.observe(headerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [loading]);
+
   const renderContent = () => {
     switch (tabValue) {
       case "song":
@@ -88,7 +111,7 @@ function AlbumContent() {
 
   return (
     <div className="w-full h-full py-8 flex flex-col">
-      <div className="flex gap-8 items-center mb-8 px-8">
+      <div className="flex gap-8 items-center mb-8 px-8" ref={headerRef}>
         <div className="w-44 h-44 flex-none relative rounded-md overflow-hidden bg-zinc-100 drop-shadow-xl">
           <img src={album.picUrl!} alt={album.name} className="object-cover" />
         </div>
@@ -140,7 +163,8 @@ function AlbumContent() {
           />
           <YeeButton variant="outline" icon={likeIcon} onClick={toggleLike} />
         </div>
-        <BlurLayer />
+
+        {isPinned && <BlurLayer />}
       </div>
 
       <div className="flex-1 w-full h-full px-8">{renderContent()}</div>

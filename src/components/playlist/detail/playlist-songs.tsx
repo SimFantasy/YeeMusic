@@ -2,6 +2,11 @@ import { SongList } from "@/components/song/song-list";
 import { Song } from "@/lib/types";
 import { CollectionsEmpty24Regular } from "@fluentui/react-icons";
 import { useMemo } from "react";
+import Pinyin from "pinyin-match";
+
+function matchesPinyin(text: string, q: string): boolean {
+  return text.toLowerCase().includes(q) || !!Pinyin.match(text, q);
+}
 
 export function PlaylistSongs({
   songs,
@@ -15,12 +20,11 @@ export function PlaylistSongs({
   const filteredAndSortedSongs = useMemo(() => {
     let result = [...songs];
     if (query) {
-      const q = query.toLowerCase();
       result = result.filter(
         (s) =>
-          s.name.toLowerCase().includes(q) ||
-          s.al?.name.toLowerCase().includes(q) ||
-          s.ar?.some((a) => a.name.toLowerCase().includes(q)),
+          matchesPinyin(s.name, query) ||
+          (s.al?.name && matchesPinyin(s.al.name, query)) ||
+          s.ar?.some((a) => matchesPinyin(a.name, query)),
       );
     }
 

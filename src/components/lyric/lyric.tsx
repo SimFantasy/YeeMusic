@@ -75,13 +75,30 @@ export function Lyric({ className }: { className?: string }) {
     return map;
   }, [romaLyric]);
 
+  const scrollToIndex = useCallback((index: number) => {
+    const el = lyricRefs.current[index];
+    if (!el || !containerRef.current) return;
+    const containerHeight = containerRef.current.clientHeight;
+    const offset =
+      el.offsetTop - containerHeight / 2 + el.clientHeight / 2;
+    targetScrollYRef.current = -offset;
+    setCurrentScrollY(-offset);
+  }, []);
+
   useEffect(() => {
     if (!currentSong) return;
 
     if (containerRef.current) {
       containerRef.current.scrollTop = 0;
     }
-  }, [currentSong]);
+    targetScrollYRef.current = 0;
+    requestAnimationFrame(() => scrollToIndex(0));
+  }, [currentSong, scrollToIndex]);
+
+  useEffect(() => {
+    if (!lyric?.length) return;
+    requestAnimationFrame(() => scrollToIndex(0));
+  }, [lyric, scrollToIndex]);
 
   const currentTimeMotion = useMotionValue(0);
   const [currentIndex, setCurrentIndex] = useState(-1);
@@ -125,23 +142,18 @@ export function Lyric({ className }: { className?: string }) {
   const scrollToCurrentIndex = useCallback(
     (skipAnimation = false) => {
       if (currentIndex < 0 || !containerRef.current) return;
-
-      const targetElement = lyricRefs.current[currentIndex];
-      if (!targetElement) return;
-
-      const containerHeight = containerRef.current.clientHeight;
-      const offset =
-        targetElement.offsetTop -
-        containerHeight / 2 +
-        targetElement.clientHeight / 2;
-
-      const newTargetScrollY = -offset;
+      if (!lyricRefs.current[currentIndex]) return;
 
       if (skipAnimation) {
-        targetScrollYRef.current = newTargetScrollY;
-        setCurrentScrollY(newTargetScrollY);
+        scrollToIndex(currentIndex);
         return;
       }
+
+      const el = lyricRefs.current[currentIndex];
+      const containerHeight = containerRef.current.clientHeight;
+      const offset =
+        el.offsetTop - containerHeight / 2 + el.clientHeight / 2;
+      const newTargetScrollY = -offset;
 
       const jumpDistancePx = Math.abs(
         targetScrollYRef.current - newTargetScrollY,
@@ -150,10 +162,9 @@ export function Lyric({ className }: { className?: string }) {
         setIsLargeJump(true);
       }
 
-      targetScrollYRef.current = newTargetScrollY;
-      setCurrentScrollY(newTargetScrollY);
+      scrollToIndex(currentIndex);
     },
-    [currentIndex],
+    [currentIndex, scrollToIndex],
   );
 
   useEffect(() => {

@@ -147,10 +147,6 @@ export const createPlayerControlSlice: StateCreator<
       }
       console.error("播放歌曲失败:", err);
       set({ isLoadingMusic: false });
-    } finally {
-      console.log(
-        `[PLAYER] 当前播放的歌曲音质：${QUALITY_BY_KEY[get().currentMusicLevelKey].desc}`,
-      );
     }
   },
 

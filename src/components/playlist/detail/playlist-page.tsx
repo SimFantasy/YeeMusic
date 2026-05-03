@@ -10,7 +10,7 @@ import {
   Play24Filled,
   Search24Filled,
 } from "@fluentui/react-icons";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PlaylistSongs } from "./playlist-songs";
 import { usePlayerStore } from "@/lib/store/playerStore";
 import { YeeButton } from "@/components/yee-button";
@@ -36,6 +36,10 @@ export function PlaylistPage({
 }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState("date");
+  const [isPinned, setIsPinned] = useState(false);
+
+  const headerRef = useRef<HTMLDivElement>(null);
 
   const playList = usePlayerStore((s) => s.playList);
 
@@ -71,11 +75,29 @@ export function PlaylistPage({
     }
   }
 
-  const [sortOption, setSortOption] = useState("date");
+  useEffect(() => {
+    const root = document.getElementById("main-scroll-container");
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsPinned(!entry.isIntersecting);
+      },
+      {
+        root,
+        rootMargin: "-10px 0px 0px 0px",
+        threshold: 0,
+      },
+    );
+
+    if (headerRef.current) {
+      observer.observe(headerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="flex gap-8 items-center mb-8 px-8">
+      <div className="flex gap-8 items-center mb-8 px-8" ref={headerRef}>
         <div className="w-44 h-44 flex-none relative rounded-md overflow-hidden bg-zinc-100 drop-shadow-xl">
           <img
             src={coverImgUrl}
@@ -181,7 +203,7 @@ export function PlaylistPage({
           </div>
         </div>
 
-        <BlurLayer />
+        {isPinned && <BlurLayer />}
       </div>
 
       <div className="px-8 relative">

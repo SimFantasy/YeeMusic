@@ -13,7 +13,10 @@ export function useInfiniteScroll(
           onLoadMore();
         }
       },
-      { threshold: 0.1 },
+      {
+        root: document.getElementById("main-scroll-container"),
+        threshold: 0.1,
+      },
     );
 
     const el = loadMoreRef.current;

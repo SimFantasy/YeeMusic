@@ -3,6 +3,7 @@ import { ILyricLine } from "@/lib/utils/lyric-parser";
 import { MotionValue, motion } from "framer-motion";
 import { forwardRef } from "react";
 import { VerbatimWord } from "./verbatim-word";
+import { LyricLeadDots } from "./lyric-lead-dots";
 
 export const LyricLine = forwardRef<
   HTMLDivElement,
@@ -52,6 +53,17 @@ export const LyricLine = forwardRef<
     }
 
     const hasWords = lyricLine.words && lyricLine.words.length > 0;
+
+    if (lyricLine.isLeadDots) {
+      return (
+        <LyricLeadDots
+          isActive={isActive}
+          targetScrollY={targetScrollY}
+          ref={ref}
+          lyricLine={lyricLine}
+        />
+      );
+    }
 
     const lineText = hasWords
       ? lyricLine.words!.map((w) => w.char).join("")

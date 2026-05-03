@@ -15,7 +15,7 @@ import {
   Play24Filled,
   Search24Regular,
 } from "@fluentui/react-icons";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Loading } from "@/components/loading";
 import { useUserStore } from "@/lib/store/userStore";
@@ -30,6 +30,9 @@ function ArtistContent() {
   const id = searchParams.get("id");
   const [artist, setArtist] = useState<Artist | null>(null);
   const [tabValue, setTabValue] = useState("song");
+  const [isPinned, setIsPinned] = useState(false);
+
+  const headerRef = useRef<HTMLDivElement>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -52,7 +55,6 @@ function ArtistContent() {
       try {
         const res = await getArtistDetail(id);
         setArtist(res);
-        console.log("artist data:", res);
       } catch (err) {
         console.error(err);
       } finally {
@@ -61,6 +63,27 @@ function ArtistContent() {
     }
     fetchArtistDetail();
   }, [id]);
+
+  useEffect(() => {
+    const root = document.getElementById("main-scroll-container");
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        console.log("Header is intersecting:", entry.isIntersecting);
+        setIsPinned(!entry.isIntersecting);
+      },
+      {
+        root,
+        rootMargin: "-10px 0px 0px 0px",
+        threshold: 0,
+      },
+    );
+
+    if (headerRef.current) {
+      observer.observe(headerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [isLoading]);
 
   async function toggleLike() {
     const targetLike = !isLike;
@@ -101,7 +124,7 @@ function ArtistContent() {
 
   return (
     <div className="w-full min-h-screen py-8 flex flex-col">
-      <div className="flex gap-8 items-center mb-8 px-8">
+      <div className="flex gap-8 items-center mb-8 px-8" ref={headerRef}>
         <div className="w-44 h-44 flex-none relative rounded-full overflow-hidden bg-zinc-100 drop-shadow-xl">
           <img
             src={artist.avatar!}
@@ -152,7 +175,7 @@ function ArtistContent() {
           </Tabs>
         </div>
 
-        <BlurLayer />
+        {isPinned && <BlurLayer />}
 
         {["song", "album"].includes(tabValue) && (
           <div className="relative flex items-center pr-8">

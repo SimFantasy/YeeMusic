@@ -48,9 +48,11 @@ function SearchContent() {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   const type = Number(tabValue) as SearchParams["type"];
 
@@ -181,7 +183,10 @@ function SearchContent() {
           setOffset((prev) => prev + LIMIT);
         }
       },
-      { threshold: 0.1 },
+      {
+        root: document.getElementById("main-scroll-container"),
+        threshold: 0.1,
+      },
     );
 
     observer.observe(el);
@@ -190,6 +195,25 @@ function SearchContent() {
       observer.disconnect();
     };
   }, [hasMore, loading]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsPinned(!entry.isIntersecting);
+      },
+      {
+        root: document.getElementById("main-scroll-container"),
+        rootMargin: "-10px 0px 0px 0px",
+        threshold: 0,
+      },
+    );
+
+    if (headerRef.current) {
+      observer.observe(headerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [loading]);
 
   const renderContent = () => {
     switch (tabValue) {
@@ -209,6 +233,7 @@ function SearchContent() {
   return (
     <div className="relative flex min-h-full w-full flex-col gap-2 py-8">
       <div
+        ref={headerRef}
         className={cn(
           "relative mt-4 mb-2 text-4xl font-bold",
           "before:text-5xl before:text-muted-foreground/60 before:content-['“']",
@@ -230,7 +255,8 @@ function SearchContent() {
             </TabsList>
           </Tabs>
         </div>
-        <BlurLayer />
+
+        {isPinned && <BlurLayer />}
       </div>
 
       <div className="h-full w-full flex-1 px-8">
