@@ -4,7 +4,7 @@ import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { usePlayerStore } from "@/lib/store/playerStore";
 import { YeeButton } from "../yee-button";
 import SFIcon from "@bradleyhodges/sfsymbols-react";
-import { sfArrowUp, sfLocation, sfScope } from "@bradleyhodges/sfsymbols";
+import { sfArrowUp, sfScope } from "@bradleyhodges/sfsymbols";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
