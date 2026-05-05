@@ -21,7 +21,10 @@ export const VerbatimWord = React.memo(function VerbatimWord({
 
     if (text.length === 0 || text.length > 7) return 0;
 
-    return Math.min(Math.max(duration - 1000, 0) / 200, 1);
+    const threshold = 800;
+    const range = 400;
+
+    return Math.min(Math.max(duration - threshold, 0) / range, 1);
   }, [word]);
 
   const rawProgress = useTransform(
@@ -36,23 +39,27 @@ export const VerbatimWord = React.memo(function VerbatimWord({
     mass: 0.8,
   });
   const gradientPct = useTransform(progress, (p) => `${(1 - p) * 100}%`);
-  const translateY = useTransform(progress, [0, 1], ["0px", "-2.4px"]);
+  const translateY = useTransform(progress, [0, 1], ["0px", "-3.2px"]);
 
-  const brightness = useTransform(progress, [0, 0.5, 1], [0, 0.8, 0.6]);
+  const brightness = useTransform(progress, [0, 0.5, 1], [0, 0.8, 1]);
   const backgroundImage = useMotionTemplate`linear-gradient(90deg,
-      rgba(255,255,255,0.8) 0%,
+      rgba(255,255,255,${brightness}) 0%,
       rgba(255,255,255,${brightness}) calc(100% - ${gradientPct}),
-      rgba(255,255,255,0) calc(100% - ${gradientPct} + 15%),
-      rgba(255,255,255,0) 100%
+      rgba(255,255,255,${useTransform(brightness, (b) => b * 0.5)}) calc(100% - ${gradientPct} + 15%),
+      rgba(255,255,255,0) calc(100% - ${gradientPct} + 35%)
     )`;
 
   const baseGlow = useTransform(progress, [0, 0.25, 0.7, 1], [0, 1, 0.4, 0]);
 
-  const glowBlur = useTransform(baseGlow, [0, 1], [0, 30 * emphasisFactor]);
-  const glowOpacity = useTransform(baseGlow, [0, 1], [0, 0.6 * emphasisFactor]);
+  const glowBlur = useTransform(baseGlow, [0, 1], [0, 10 * emphasisFactor]);
+  const glowOpacity = useTransform(
+    baseGlow,
+    [0, 1],
+    [0, 0.25 * emphasisFactor],
+  );
 
-  const coreBlur = useTransform(baseGlow, [0, 1], [0, 8 * emphasisFactor]);
-  const coreOpacity = useTransform(baseGlow, [0, 1], [0, 1.0 * emphasisFactor]);
+  const coreBlur = useTransform(baseGlow, [0, 1], [0, 2 * emphasisFactor]);
+  const coreOpacity = useTransform(baseGlow, [0, 1], [0, 0.6 * emphasisFactor]);
 
   const textShadow = useMotionTemplate`
       0 0 ${coreBlur}px rgba(255, 255, 255, ${coreOpacity}),
@@ -78,7 +85,7 @@ export const VerbatimWord = React.memo(function VerbatimWord({
           WebkitBackgroundClip: "text",
           backgroundClip: "text",
           WebkitTextFillColor: "rgba(255,255,255,0.4)",
-          backgroundSize: "100% 100%",
+          backgroundSize: "100%",
         }}
       >
         {word.char}
@@ -135,7 +142,7 @@ const WavyChar = React.memo(function WavyChar({
 }) {
   const charY = useTransform(progress, (p) => {
     if (!isWavy || p <= 0 || p >= 1) return 0;
-    const sine = Math.sin(p * Math.PI * 2 - idx * 0.4);
+    const sine = Math.cos(p * Math.PI * 2 - idx * 0.5);
     return sine * 2 * emphasisFactor * Math.sin(p * Math.PI);
   });
 

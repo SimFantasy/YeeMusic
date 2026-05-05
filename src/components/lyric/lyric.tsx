@@ -79,11 +79,25 @@ export function Lyric({ className }: { className?: string }) {
     const el = lyricRefs.current[index];
     if (!el || !containerRef.current) return;
     const containerHeight = containerRef.current.clientHeight;
-    const offset =
-      el.offsetTop - containerHeight / 2 + el.clientHeight / 2;
+    const offset = el.offsetTop - containerHeight / 2 + el.clientHeight / 2;
     targetScrollYRef.current = -offset;
     setCurrentScrollY(-offset);
   }, []);
+
+  const findCurrentIndex = useCallback((lyrics: ILyricLine[]) => {
+    const currentTimeMs = usePlayerStore.getState().currentTime * 1000;
+    let idx = -1;
+    for (let i = lyrics.length - 1; i >= 0; i--) {
+      if (lyrics[i].lineStart <= currentTimeMs && lyrics[i].lineStart >= 0) {
+        idx = i;
+        break;
+      }
+    }
+    return Math.max(0, idx);
+  }, []);
+
+  const currentTimeMotion = useMotionValue(0);
+  const [currentIndex, setCurrentIndex] = useState(-1);
 
   useEffect(() => {
     if (!currentSong) return;
@@ -92,16 +106,19 @@ export function Lyric({ className }: { className?: string }) {
       containerRef.current.scrollTop = 0;
     }
     targetScrollYRef.current = 0;
-    requestAnimationFrame(() => scrollToIndex(0));
-  }, [currentSong, scrollToIndex]);
+    if (lyric?.length) {
+      const idx = findCurrentIndex(lyric);
+      setCurrentIndex(idx);
+      requestAnimationFrame(() => scrollToIndex(idx));
+    }
+  }, [currentSong, scrollToIndex, lyric, findCurrentIndex]);
 
   useEffect(() => {
     if (!lyric?.length) return;
-    requestAnimationFrame(() => scrollToIndex(0));
-  }, [lyric, scrollToIndex]);
-
-  const currentTimeMotion = useMotionValue(0);
-  const [currentIndex, setCurrentIndex] = useState(-1);
+    const idx = findCurrentIndex(lyric);
+    setCurrentIndex(idx);
+    requestAnimationFrame(() => scrollToIndex(idx));
+  }, [lyric, scrollToIndex, findCurrentIndex]);
 
   useEffect(() => {
     const unsubscribe = usePlayerStore.subscribe(
@@ -151,8 +168,7 @@ export function Lyric({ className }: { className?: string }) {
 
       const el = lyricRefs.current[currentIndex];
       const containerHeight = containerRef.current.clientHeight;
-      const offset =
-        el.offsetTop - containerHeight / 2 + el.clientHeight / 2;
+      const offset = el!.offsetTop - containerHeight / 2 + el!.clientHeight / 2;
       const newTargetScrollY = -offset;
 
       const jumpDistancePx = Math.abs(

@@ -110,6 +110,7 @@ const BASE_URL = "你的 API 地址";
 - [shadcn/ui](https://github.com/shadcn-ui/ui)
 - [Zustand](https://github.com/pmndrs/zustand)
 - [Fluent UI](https://github.com/microsoft/fluentui)
+- [AMLL](https://github.com/amll-dev/applemusic-like-lyrics) 
 
 ## ⚠️ 声明
 

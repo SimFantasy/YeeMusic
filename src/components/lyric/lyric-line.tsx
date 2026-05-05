@@ -95,32 +95,6 @@ export const LyricLine = forwardRef<
               delay: scrollDelay,
             };
 
-    const layoutTransition = isLayoutChanging
-      ? {
-          type: "spring" as const,
-          stiffness: 170,
-          damping: 26,
-          mass: 0.8,
-          delay: 0,
-        }
-      : isScrolling
-        ? { type: "tween" as const, duration: 0, ease: "linear" as const }
-        : isLargeJump
-          ? {
-              type: "spring" as const,
-              stiffness: 120,
-              damping: 20,
-              mass: 0.5,
-              delay: 0,
-            }
-          : {
-              type: "spring" as const,
-              stiffness: 120,
-              damping: 20,
-              mass: 0.8,
-              delay: scrollDelay,
-            };
-
     const subStyle: React.CSSProperties = {
       color: "rgba(255, 255, 255, 0.4)",
       filter: `blur(${blur}px)`,
@@ -130,19 +104,17 @@ export const LyricLine = forwardRef<
       return (
         <div
           ref={ref}
-          className="px-4 py-4 rounded-xl inline-block pointer-events-none"
+          className="px-4 py-4 rounded-xl inline-flex flex-col pointer-events-none"
           style={{ transform: `translateY(${targetScrollY}px)`, opacity: 0 }}
         >
-          <span className="w-full text-3xl text-white inline-block font-medium tracking-tight">
-            {lineText}
-          </span>
+          <span className="text-3xl text-white font-medium">{lineText}</span>
           {showTrans && transLine && (
-            <span className="w-full text-2xl inline-block font-medium tracking-tight mt-4">
+            <span className="text-2xl font-medium mt-4">
               {transLine.lineText}
             </span>
           )}
           {showRoma && romaLine && (
-            <span className="w-full text-2xl inline-block font-medium tracking-tight mt-4">
+            <span className="text-2xl font-medium mt-4 ">
               {romaLine.lineText}
             </span>
           )}
@@ -150,21 +122,29 @@ export const LyricLine = forwardRef<
       );
     }
 
+    const layoutTransition = {
+      type: "spring" as const,
+      stiffness: 120,
+      damping: 20,
+      mass: 0.8,
+    };
+
     if (!isActive) {
       return (
         <motion.div
-          layout
+          layout="position"
           ref={ref}
+          initial={false}
           animate={{ y: targetScrollY }}
-          transition={{ layout: layoutTransition, y: yTransition }}
+          transition={{ y: yTransition, layout: layoutTransition }}
         >
           <motion.div
-            className="cursor-pointer hover:bg-white/5 px-4 py-4 rounded-xl inline-block transition-colors duration-300"
+            className="cursor-pointer hover:bg-white/5 px-4 py-4 rounded-xl inline-flex flex-col transition-colors duration-300"
             onClick={handleClick}
           >
             <motion.span
               initial={false}
-              className="w-full text-3xl text-white/60 inline-block font-medium tracking-tight"
+              className="text-3xl text-white/60 font-medium  saturate-200 brightness-120 mix-blend-plus-lighter"
               animate={{
                 filter: `blur(${blur}px)`,
                 opacity,
@@ -175,11 +155,10 @@ export const LyricLine = forwardRef<
             </motion.span>
             {showTrans && transLine && (
               <motion.span
-                layout="position"
                 initial={{ opacity: 0 }}
                 animate={{ opacity }}
                 transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                className="w-full text-2xl inline-block font-medium tracking-tight mt-4"
+                className="text-2xl font-medium mt-4"
                 style={subStyle}
               >
                 {transLine.lineText}
@@ -187,11 +166,10 @@ export const LyricLine = forwardRef<
             )}
             {showRoma && romaLine && (
               <motion.span
-                layout="position"
                 initial={{ opacity: 0 }}
                 animate={{ opacity }}
                 transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                className="w-full text-2xl inline-block font-medium tracking-tight mt-4"
+                className="text-2xl font-medium mt-4"
                 style={subStyle}
               >
                 {romaLine.lineText}
@@ -204,18 +182,19 @@ export const LyricLine = forwardRef<
 
     return (
       <motion.div
-        layout
+        layout="position"
         ref={ref}
+        initial={false}
         animate={{ y: targetScrollY }}
-        transition={{ layout: layoutTransition, y: yTransition }}
+        transition={{ y: yTransition, layout: layoutTransition }}
       >
         <motion.div
-          className="cursor-pointer hover:bg-white/5 px-4 py-4 rounded-xl inline-block transition-colors duration-300"
+          className="cursor-pointer hover:bg-white/5 px-4 py-4 rounded-xl inline-flex flex-col transition-colors duration-300"
           onClick={handleClick}
         >
           <motion.span
             initial={false}
-            className="w-full text-3xl text-white/60 mix-blend-plus-lighter inline-block font-medium tracking-tight"
+            className="text-3xl text-white font-medium"
             animate={{
               filter: `blur(${blur}px)`,
               opacity,
@@ -238,11 +217,10 @@ export const LyricLine = forwardRef<
 
           {showTrans && transLine && (
             <motion.span
-              layout="position"
               initial={{ opacity: 0 }}
               animate={{ opacity }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
-              className="w-full text-2xl mix-blend-plus-lighter inline-block font-medium tracking-tight mt-4"
+              className="text-2xl mix-blend-plus-lighter font-medium mt-4"
               style={subStyle}
             >
               {transLine.lineText}
@@ -251,11 +229,10 @@ export const LyricLine = forwardRef<
 
           {showRoma && romaLine && (
             <motion.span
-              layout="position"
               initial={{ opacity: 0 }}
               animate={{ opacity }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
-              className="w-full text-2xl mix-blend-plus-lighter inline-block font-medium tracking-tight mt-4"
+              className="text-2xl mix-blend-plus-lighter font-medium mt-4"
               style={subStyle}
             >
               {romaLine.lineText}

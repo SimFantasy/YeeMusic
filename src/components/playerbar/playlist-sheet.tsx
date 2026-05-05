@@ -63,8 +63,9 @@ export function PlaylistSheet() {
           </div>
         </SheetHeader>
 
-        <div className="flex-1 w-full -mt-8">
+        <div className="flex-1 w-full -mt-8 no-scrollbar!">
           <Virtuoso
+            className="no-scrollbar!"
             data={playlist}
             initialTopMostItemIndex={initialIndex !== -1 ? initialIndex : 0}
             itemContent={(_, song) => (

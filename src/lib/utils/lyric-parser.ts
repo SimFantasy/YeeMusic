@@ -24,10 +24,10 @@ function insertLeadDots(lyrics: ILyricLine[]): ILyricLine[] {
   // 前奏：第一行歌词之前如果间隔足够长，插入 dots
   if (lyrics[0].lineStart >= MIN_GAP) {
     result.push({
-      lineStart: FIRST_DOT_DELAY,
+      lineStart: 0,
       lineText: "···",
       isLeadDots: true,
-      leadDotsDuration: lyrics[0].lineStart - FIRST_DOT_DELAY,
+      leadDotsDuration: lyrics[0].lineStart,
     });
   }
 
@@ -41,8 +41,7 @@ function insertLeadDots(lyrics: ILyricLine[]): ILyricLine[] {
           lineStart: Math.round(dotTime),
           lineText: "···",
           isLeadDots: true,
-          leadDotsDuration:
-            lyrics[i + 1].lineStart - Math.round(dotTime),
+          leadDotsDuration: lyrics[i + 1].lineStart - Math.round(dotTime),
         });
       }
     }

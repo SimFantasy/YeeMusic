@@ -34,7 +34,7 @@ export function LyricSheetSonglist({
         </div>
 
         <div
-          className="flex-1 w-full relative"
+          className="flex-1 w-full relative no-scrollbar"
           style={{
             height: 560,
             WebkitMaskImage: maskImage,
@@ -42,7 +42,7 @@ export function LyricSheetSonglist({
           }}
         >
           <Virtuoso
-            className=""
+            className="no-scrollbar!"
             onScroll={handleScroll}
             initialTopMostItemIndex={initialIndex}
             data={playlist}

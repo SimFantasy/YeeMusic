@@ -193,7 +193,7 @@ function SongMeta({
         <YeeButton
           variant="ghost"
           icon={<MoreHorizontal24Filled className="size-5 drop-shadow-md" />}
-          className="size-8 hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
+          className=" size-8 hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 ease-in-out"
           onClick={(e) => {
             e.preventDefault();
             openMenu(e.clientX + 10, e.clientY - 80, "song", currentSong);
@@ -222,13 +222,13 @@ function LyricSheetSonginfoDuration({
           onValueChange={seek}
           max={100}
           step={0.1}
-          trackClassName="bg-white/10 h-2! group-hover:h-3! transition-[height] duration-200 mix-blend-plus-lighter"
-          rangeClassName="bg-white/40 h-2! group-hover:h-3! transition-[height] duration-200 mix-blend-plus-lighter"
+          trackClassName="bg-white/20 backdrop-brightness-200 h-2! group-hover:h-3! transition-[height] mix-blend-plus-lighter duration-300 ease-out backdrop-blur-lg"
+          rangeClassName="bg-white/60 backdrop-brightness-150 h-2! group-hover:h-3! transition-[height]  duration-300 ease-out"
           showThumb={false}
         />
       </div>
-      <div className="grid grid-cols-3 w-full items-center">
-        <span className="text-white/40 font-light drop-shadow-md text-left select-none">
+      <div className="grid grid-cols-3 w-full items-center ">
+        <span className="text-white/40 font-light  text-left select-none">
           {formatDuration(currentTime)}
         </span>
 
@@ -236,7 +236,7 @@ function LyricSheetSonginfoDuration({
           <LyricSheetAudioLevelModel setIsLyricSheetOpen={setIsOpen} />
         </div>
 
-        <span className="text-white/40 font-light drop-shadow-md text-right select-none">
+        <span className="text-white/40 font-light  text-right select-none">
           {formatDuration(duration)}
         </span>
       </div>
@@ -392,8 +392,8 @@ function VolumeControl() {
           onValueChange={updateVolume}
           max={1}
           step={0.01}
-          trackClassName="bg-white/20 h-2! group-hover:h-3! transition-[height] mix-blend-plus-lighter"
-          rangeClassName="bg-white/40 h-2! group-hover:h-3! transition-[height] mix-blend-plus-lighter"
+          trackClassName="bg-white/20 backdrop-brightness-200 h-2! group-hover:h-3! transition-[height] mix-blend-plus-lighter duration-300 ease-out backdrop-blur-lg"
+          rangeClassName="bg-white/60 backdrop-brightness-120 h-2! group-hover:h-3! transition-[height] duration-300 ease-out"
           tooltip={`音量：${volume * 100}`}
           showThumb={false}
         />
