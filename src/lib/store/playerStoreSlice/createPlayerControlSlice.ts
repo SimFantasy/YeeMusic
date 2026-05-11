@@ -243,6 +243,10 @@ export const createPlayerControlSlice: StateCreator<
     } = get();
     if (!currentSong || playlist.length === 0) return;
 
+    console.log(
+      `[PLAYER] 当前播放歌曲在列表中的顺序: ${currentIndexInPlaylist}`,
+    );
+
     // 单曲循环
     if (repeatMode === "single" && !isManual) {
       corePlayer.seek(0);
@@ -253,7 +257,7 @@ export const createPlayerControlSlice: StateCreator<
 
     let nextIdx: number;
     // 随机播放
-    if (isShuffle) {
+    if (isShuffle === "on") {
       nextIdx = Math.floor(Math.random() * playlist.length);
       if (playlist.length > 1 && nextIdx === currentIndexInPlaylist) {
         nextIdx = (nextIdx + 1) % playlist.length;
@@ -261,7 +265,13 @@ export const createPlayerControlSlice: StateCreator<
     }
     // 顺序或循环
     else {
+      console.log(
+        `[PLAYER] 当前播放歌曲在列表中的顺序: ${currentIndexInPlaylist}`,
+      );
       nextIdx = currentIndexInPlaylist + 1;
+      console.log(
+        `[PLAYER] 当前播放歌曲在列表中的顺序: ${currentIndexInPlaylist}`,
+      );
       // 顺序播放时，最后一首播完就暂停
       if (nextIdx >= playlist.length) {
         nextIdx = 0;
@@ -302,7 +312,7 @@ export const createPlayerControlSlice: StateCreator<
 
     let prevIdx: number;
     // 随机播放
-    if (isShuffle) {
+    if (isShuffle === "on") {
       prevIdx = Math.floor(Math.random() * playlist.length);
       if (playlist.length > 1 && prevIdx === currentIndexInPlaylist) {
         prevIdx = (prevIdx - 1 + playlist.length) % playlist.length;

@@ -89,18 +89,18 @@ const BackgroundPlane: React.FC<{ colors: [number, number, number][] }> = ({
 
       const seed = i * 1.618033988;
       // Per-point frequency variation — each point oscillates at its own speed
-      const fq = 0.7 + (seed * 0.618) % 0.8; // range ~0.7–1.5
+      const fq = 0.7 + ((seed * 0.618) % 0.8); // range ~0.7–1.5
 
       const volDrift = 1.0 + volSq * 0.6;
       const driftX =
         (Math.sin(t * (1.1 * fq) + seed * 3.7) * 0.15 +
-          Math.sin(t * (0.53 * fq) + seed * 2.3) * 0.10 +
+          Math.sin(t * (0.53 * fq) + seed * 2.3) * 0.1 +
           Math.sin(t * (1.9 * fq) + seed * 5.1) * 0.06) *
         aspectX *
         volDrift;
       const driftY =
         (Math.cos(t * (0.97 * fq) + seed * 4.1) * 0.15 +
-          Math.cos(t * (0.41 * fq) + seed * 1.9) * 0.10 +
+          Math.cos(t * (0.41 * fq) + seed * 1.9) * 0.1 +
           Math.cos(t * (1.6 * fq) + seed * 6.3) * 0.06) *
         aspectY *
         volDrift;
@@ -113,21 +113,17 @@ const BackgroundPlane: React.FC<{ colors: [number, number, number][] }> = ({
 
       let rotU: number, rotV: number, scaleStrength: number;
       if (!isBorder) {
-        const twist1 =
-          Math.sin(t * (1.2 * fq) + seed * 2.7) * Math.PI * 0.5;
-        const twist2 =
-          Math.sin(t * (0.6 * fq) + seed * 4.3) * Math.PI * 0.3;
-        const twist3 =
-          Math.sin(t * (2.1 * fq) + seed * 1.1) * Math.PI * 0.12;
+        // Limit total twist to ~±90° max to prevent patch self-intersection
+        const twist1 = Math.sin(t * (1.2 * fq) + seed * 2.7) * Math.PI * 0.3;
+        const twist2 = Math.sin(t * (0.6 * fq) + seed * 4.3) * Math.PI * 0.15;
+        const twist3 = Math.sin(t * (2.1 * fq) + seed * 1.1) * Math.PI * 0.05;
         rotU = twist1 + twist2 + twist3;
         rotV = rotU + Math.PI / 2.0;
         scaleStrength =
-          2.1 + Math.sin(t * (0.8 * fq) + seed) * 0.6 + volSq * 1.2;
+          1.8 + Math.sin(t * (0.8 * fq) + seed) * 0.4 + volSq * 1.2;
       } else {
-        const w1 =
-          Math.sin(t * (0.7 * fq) + seed * 3.1) * (Math.PI / 14);
-        const w2 =
-          Math.sin(t * (1.3 * fq) + seed * 5.7) * (Math.PI / 22);
+        const w1 = Math.sin(t * (0.7 * fq) + seed * 3.1) * (Math.PI / 14);
+        const w2 = Math.sin(t * (1.3 * fq) + seed * 5.7) * (Math.PI / 22);
         rotU = w1 + w2;
         rotV = Math.PI / 2.0 + w1 * 0.5 + w2 * 0.3;
         scaleStrength = 1.25 + volSq * 0.35;
@@ -175,7 +171,15 @@ export const MeshGradient: React.FC<{
         zIndex: 0,
       }}
     >
-      <Canvas orthographic dpr={[1, 2]} gl={{ antialias: false, alpha: false }}>
+      <Canvas
+        orthographic
+        dpr={[1, 1]}
+        gl={{
+          antialias: false,
+          alpha: false,
+          powerPreference: "high-performance",
+        }}
+      >
         <BackgroundPlane colors={colors} />
       </Canvas>
     </div>
